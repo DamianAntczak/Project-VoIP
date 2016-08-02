@@ -9,7 +9,7 @@ using System.Net;
 using LiteDB;
 namespace Server___konsola {
     class Program {
-        private const int listenPort = 18200;
+        private const int listenPort = 11001;
         static ClientPool clientPool;
         static TcpListener tcpListener;
         const string odebrano = "ODEBRANO";
@@ -18,7 +18,7 @@ namespace Server___konsola {
             tcpListener = new TcpListener(IPAddress.Any, listenPort);
             tcpListener.Start();
 
-            ListenerSocket().Wait();
+            Listener().Wait();
 
             //users.Clear();
             //using (var db = new LiteDatabase("DB.db")) {
