@@ -7,8 +7,9 @@ using System.IO;
 using System.Net.Sockets;
 using System.Net;
 using LiteDB;
+using System.Security;
 namespace Server___konsola {
-    class Program {
+    class Program : IUserDataBaseOperations {
         private const int listenPort = 11001;
         static ClientPool clientPool;
         static TcpListener tcpListener;
@@ -36,6 +37,7 @@ namespace Server___konsola {
         }
         static public async Task<string> Listener() {
             Console.WriteLine("Czekam");
+            SecureString ss = new SecureString();
             using (var tcpClient = await tcpListener.AcceptTcpClientAsync()) {
                 if (tcpClient.Connected) {
                     while (true) {
@@ -61,10 +63,10 @@ namespace Server___konsola {
         static public void BazaInit() {
             // BAZA DANYCH
             List<User> users = new List<User>();
-            users.Add(new User { Name = "N", SecondName = "SN", Login = "L", Password = "PASS", Description = "OPIS", Friends = new List<string>() { "2l" } });
-            users.Add(new User { Name = "2N", SecondName = "2SN", Login = "2l", Password = "PASS", Description = "OPISSSSSSSSSS", Friends = new List<string>() { "L" } });
-            users.Add(new User { Name = "3N", SecondName = "3SN", Login = "3L", Password = "Pass", Description = "COS" });
-            users.Add(new User { Name = "3N", SecondName = "3SN", Login = "4L", Password = "Pass", Description = "COS" });
+            users.Add(new User { Name = "N", SecondName = "SN", Login = "L", PasswordHash = "PASS", Description = "OPIS", Friends = new List<string>() { "2l" } });
+            users.Add(new User { Name = "2N", SecondName = "2SN", Login = "2l", PasswordHash = "PASS", Description = "OPISSSSSSSSSS", Friends = new List<string>() { "L" } });
+            users.Add(new User { Name = "3N", SecondName = "3SN", Login = "3L", PasswordHash = "Pass", Description = "COS" });
+            users.Add(new User { Name = "3N", SecondName = "3SN", Login = "4L", PasswordHash = "Pass", Description = "COS" });
             using (var db = new LiteDatabase("DB.db")) {
                 var col = db.GetCollection<User>("users");
                 /// ustawienie unikatowej wartości. 
@@ -79,8 +81,36 @@ namespace Server___konsola {
                         Console.WriteLine(le.Message);
                     }
                 }
-                db.Commit();
+                
             }
+        }
+
+        public UserInfo LookForUser(string Name, string SecondName, string Login) {
+            throw new NotImplementedException();
+        }
+
+        public bool TryRegisterNewUser(string Name, string SecondName, string Login, string PasswordHash, string Description) {
+            throw new NotImplementedException();
+        }
+
+        public void AddNewFriendToList(string Login1, string Login2) {
+            throw new NotImplementedException();
+        }
+
+        public void ChangeUserData(string Login, string Name, string SecondName, string Description) {
+            throw new NotImplementedException();
+        }
+
+        public void ChangeUserPassword(string Login, string OldPasswordHash, string NewPasswordHash) {
+            throw new NotImplementedException();
+        }
+
+        public bool TryToLoginUser(string Login, string Password) {
+            throw new NotImplementedException();
+        }
+
+        public string HashPassword(string ClientHashedPassword) {
+            throw new NotImplementedException();
         }
         #region Wersja z gniazdkiem
         //static public async Task ListenerSocket() {

@@ -5,17 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Server___konsola {
-    class User {
-        public int Id { get; set; }
+    class UserInfo {
         public string Name { get; set; }
         public string SecondName { get; set; }
         public string Login { get; set; }
-        /// <summary>
-        /// Pasword -> ClientHash -> Server -> ServerHash?
-        /// </summary>
-        public string PasswordHash { get; set; }
         public string Description { get; set; }
         public string ActualIP { get; set; }
-        public List<string> Friends { get; set; }
     }
 }
