@@ -13,13 +13,16 @@ namespace Server___konsola {
         private const int listenPort = 11001;
         static ClientPool clientPool;
         static TcpListener tcpListener;
+        static LiteDatabase dataBase;
+        static LiteCollection<User> dataBaseCollection;
         const string odebrano = "ODEBRANO";
         static void Main(string[] args) {
             clientPool = new ClientPool();
             tcpListener = new TcpListener(IPAddress.Any, listenPort);
             tcpListener.Start();
-
-            Listener().Wait();
+            dataBase = new LiteDatabase("DB.db");
+            dataBaseCollection = dataBase.GetCollection<User>("users");
+            Listener();
 
             //users.Clear();
             //using (var db = new LiteDatabase("DB.db")) {
@@ -32,6 +35,7 @@ namespace Server___konsola {
             //        Console.WriteLine(u.ToString());
             //    }
             //}
+            BazaInit();
             Console.ReadKey();
             tcpListener.Stop();
         }
@@ -62,26 +66,26 @@ namespace Server___konsola {
         }
         static public void BazaInit() {
             // BAZA DANYCH
-            List<User> users = new List<User>();
-            users.Add(new User { Name = "N", SecondName = "SN", Login = "L", PasswordHash = "PASS", Description = "OPIS", Friends = new List<string>() { "2l" } });
-            users.Add(new User { Name = "2N", SecondName = "2SN", Login = "2l", PasswordHash = "PASS", Description = "OPISSSSSSSSSS", Friends = new List<string>() { "L" } });
-            users.Add(new User { Name = "3N", SecondName = "3SN", Login = "3L", PasswordHash = "Pass", Description = "COS" });
-            users.Add(new User { Name = "3N", SecondName = "3SN", Login = "4L", PasswordHash = "Pass", Description = "COS" });
+            Console.WriteLine("Inicjalizacja bazy");
+            List<User> userList = new List<User>();
+            userList.Add(new User { Name = "N", SecondName = "SN", Login = "L", PasswordHash = "PASS", Description = "OPIS", Friends = new List<string>() { "2l" } });
+            userList.Add(new User { Name = "2N", SecondName = "2SN", Login = "2l", PasswordHash = "PASS", Description = "OPISSSSSSSSSS", Friends = new List<string>() { "L" } });
+            userList.Add(new User { Name = "3N", SecondName = "3SN", Login = "3L", PasswordHash = "Pass", Description = "COS" });
+            userList.Add(new User { Name = "3N", SecondName = "3SN", Login = "4L", PasswordHash = "Pass", Description = "COS" });
             using (var db = new LiteDatabase("DB.db")) {
-                var col = db.GetCollection<User>("users");
+                var users = db.GetCollection<User>("users");
                 /// ustawienie unikatowej wartości. 
-                col.EnsureIndex(x => x.Login, true);
-                db.BeginTrans();
-                foreach (var u in users) {
+                users.EnsureIndex(x => x.Login, true);
+                foreach (var u in userList) {
 
                     try {
-                        col.Insert(u);
+                        users.Insert(u);
                     }
                     catch (LiteException le) {
                         Console.WriteLine(le.Message);
                     }
                 }
-                
+                Console.WriteLine("Zakończono inicjalizację");
             }
         }
 
@@ -90,19 +94,50 @@ namespace Server___konsola {
         }
 
         public bool TryRegisterNewUser(string Name, string SecondName, string Login, string PasswordHash, string Description) {
-            throw new NotImplementedException();
+            Console.WriteLine("Próba zapisania nowego użytkownika do bazy");
+            if (dataBase == null)
+                throw new ArgumentNullException();
+            var user = new User { Name = Name, SecondName = SecondName, Login = Login, PasswordHash = PasswordHash, Description = Description };
+            try {
+                dataBaseCollection.Insert(user);
+                return true;
+            }
+            catch (LiteException e) {
+                Console.WriteLine(e.Message);
+                return false;
+            }
         }
 
         public void AddNewFriendToList(string Login1, string Login2) {
             throw new NotImplementedException();
         }
-
-        public void ChangeUserData(string Login, string Name, string SecondName, string Description) {
-            throw new NotImplementedException();
+        /// <summary>
+        /// dodatkowa weryfikacja z loginem i id
+        /// może dodać IP?
+        /// </summary>
+        /// <param name="UserID"></param>
+        /// <param name="Login"></param>
+        /// <param name="Name"></param>
+        /// <param name="SecondName"></param>
+        /// <param name="Description"></param>
+        public void ChangeUserData(int UserID, string Login, string Name, string SecondName, string Description) {
+            var user = dataBaseCollection.Find(x => x.Id == UserID && x.Login == Login).First();
+            if (user != null) {
+                if (Name != null && user.Name != Name)
+                    user.Name = Name;
+                if (SecondName != null && user.SecondName != SecondName)
+                    user.SecondName = SecondName;
+                if (Description != null && user.Description != Description)
+                    user.Description = Description;
+                dataBaseCollection.Update(user);
+            }
         }
-
-        public void ChangeUserPassword(string Login, string OldPasswordHash, string NewPasswordHash) {
-            throw new NotImplementedException();
+        public void ChangeUserPassword(int UserID, string Login, string OldPasswordHash, string NewPasswordHash) {
+            var user = dataBaseCollection.FindOne(x => x.Id == UserID && x.Login == Login);
+            var oldPassword = HashPassword(OldPasswordHash);
+            var newPassword = HashPassword(NewPasswordHash);
+            if (oldPassword != null && oldPassword == user.PasswordHash && newPassword != null)
+                user.PasswordHash = newPassword;
         }
 
         public bool TryToLoginUser(string Login, string Password) {
@@ -110,6 +145,7 @@ namespace Server___konsola {
         }
 
         public string HashPassword(string ClientHashedPassword) {
+            //haslo >8 liter
             throw new NotImplementedException();
         }
         #region Wersja z gniazdkiem
