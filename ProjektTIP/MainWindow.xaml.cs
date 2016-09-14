@@ -66,7 +66,7 @@ namespace ProjektTIP
             waveSource.DataAvailable += new EventHandler<WaveInEventArgs>(waveSource_DataAvailable);
             waveSource.RecordingStopped += new EventHandler<StoppedEventArgs>(waveSource_RecordingStopped);
 
-           waveFile = new WaveFileWriter(@"E:\Test1.wav", waveSource.WaveFormat);
+           waveFile = new WaveFileWriter(@"C:\Temp\Test1.wav", waveSource.WaveFormat);
 
             waveSource.StartRecording();
         }

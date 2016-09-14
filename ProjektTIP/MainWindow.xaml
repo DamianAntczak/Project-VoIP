@@ -7,9 +7,25 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
     <Grid>
-        <Button x:Name="bConnection" Content="Połącz" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" Click="bConnection_Click"/>
-        <Button x:Name="bAvalible" Content="Dostępny" HorizontalAlignment="Left" Margin="432,10,0,0" VerticalAlignment="Top" Width="75" Click="bAvalible_Click"/>
-        <Button x:Name="bBye" Content="Zakończ" HorizontalAlignment="Left" Margin="10,49,0,0" VerticalAlignment="Top" Width="75" Click="bBye_Click"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.25*" />
+            <ColumnDefinition Width="0.75*" />
+            <ColumnDefinition Width="0.75*" />
+            <ColumnDefinition Width="0.25*" />
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="0.25*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.5*" />
+            <RowDefinition Height="2*" />
+            <RowDefinition Height="0.25*" />
+            <RowDefinition Height="0.5*" />
+            <RowDefinition Height="0.25*" />
+        </Grid.RowDefinitions>
+        <Button x:Name="bConnection" Content="Połącz" Grid.Column="2" Grid.Row="3" VerticalAlignment="Top" Click="bConnection_Click" Height="22" Margin="0,0,1,0" HorizontalAlignment="Right" Width="119"/>
+        <Button x:Name="bAvalible" Content="Dostępny" Grid.Column="1" Grid.Row="3" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="109" Click="bAvalible_Click" Height="22"/>
+        <ListBox x:Name="listFriends" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" Height="182"  VerticalAlignment="Top" />
+        <Image x:Name="freindImg" Grid.Column="4" Grid.Row="1" HorizontalAlignment="Left" Height="163" Margin="0,0,0,0" VerticalAlignment="Top" Width="159"/>
 
     </Grid>
 </Window>
