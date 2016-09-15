@@ -1,5 +1,6 @@
 ﻿using NAudio.Wave;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -16,6 +17,8 @@ namespace ProjektTIP
     public partial class MainWindow : Window
     {
         private const int listenPort = 11000;
+
+        private Friends friends;
 
         private Socket sending_socket;
         private Socket sending_socket_audio;
@@ -37,6 +40,13 @@ namespace ProjektTIP
             sending_socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             send_to_address = IPAddress.Parse("192.168.0.158");
             sending_end_point = new IPEndPoint(send_to_address, 11000);
+
+            friends = new Friends();
+            friends.addFriend("Damian");
+            friends.addFriend("Wojtas");
+
+            listFriends.ItemsSource = friends;
+            listFriends.DisplayMemberPath = "Nick";
         }
 
         private void bConnection_Click(object sender, RoutedEventArgs e)
