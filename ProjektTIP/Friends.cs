@@ -28,6 +28,11 @@ namespace ProjektTIP
             friends.Add(new Friend(nick));
         }
 
+        public void addFriend(Friend friend)
+        {
+            friends.Add(friend);
+        }
+
         public Friends()
         {
             friends = new List<Friend>();

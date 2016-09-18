@@ -24,8 +24,9 @@
         </Grid.RowDefinitions>
         <Button x:Name="bConnection" Content="Połącz" Grid.Column="2" Grid.Row="3" Click="bConnection_Click" Margin="0,0,1,24"/>
         <Button x:Name="bAvalible" Content="Dostępny" Grid.Column="1" Grid.Row="3" Click="bAvalible_Click" Margin="0,0,10,24"/>
-        <ListBox x:Name="listFriends" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" Margin="0,0,10,10" />
-        <Image x:Name="freindImg" Grid.Column="4" Grid.Row="1" HorizontalAlignment="Left" Height="163" Margin="0,0,0,0" VerticalAlignment="Top" Width="159"/>
+        <ListBox x:Name="listFriends" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" Margin="0,0,10,10" SelectionChanged="listFriends_SelectionChanged" />
+        <Image x:Name="freindImg" Grid.Column="4" Grid.Row="1" HorizontalAlignment="Left" Height="163" Margin="0,0,0,0" VerticalAlignment="Top" Width="159" />
+        <Label x:Name="freindLabel" Content="" Grid.Column="4" HorizontalAlignment="Left" Margin="10,0,0,0" Grid.Row="3" VerticalAlignment="Top" Width="139"/>
 
     </Grid>
 </Window>

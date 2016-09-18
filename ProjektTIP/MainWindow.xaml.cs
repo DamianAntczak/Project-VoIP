@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Windows;
+using System.Windows.Media.Imaging;
 
 namespace ProjektTIP
 {
@@ -42,6 +43,10 @@ namespace ProjektTIP
             sending_end_point = new IPEndPoint(send_to_address, 11000);
 
             friends = new Friends();
+            var friend = new Friend("Buggi");
+            friend.setName("Jakub", "Bugaj");
+            friend.setAvatar("Azx");
+            friends.addFriend(friend);
             friends.addFriend("Damian");
             friends.addFriend("Wojtas");
 
@@ -179,6 +184,24 @@ namespace ProjektTIP
         private void bBye_Click(object sender, RoutedEventArgs e)
         {
             waveSource.StopRecording();
+        }
+
+        private void listFriends_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            var selectedItem = (Friend)listFriends.SelectedItem;
+
+            if (!String.IsNullOrEmpty(selectedItem.Name))
+            {
+                freindLabel.Content = selectedItem.Name + ' ' + selectedItem.Last_name;
+            }
+            else
+            {
+                freindLabel.Content = selectedItem.Nick;
+                freindImg.Source = new BitmapImage(new Uri("C:\\avatar-man.png"));
+
+
+            }
+
         }
     }
 }

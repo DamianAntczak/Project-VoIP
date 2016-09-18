@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 
 namespace ProjektTIP
 {
@@ -15,6 +17,12 @@ namespace ProjektTIP
             get{ return nick; }
             set{ nick = value; }
         }
+
+        private string name;
+        public string Name { get; set; }
+
+        private string last_name;
+        public string Last_name { get; set; }
 
         private int opinion;
         public int Opinion
@@ -36,13 +44,30 @@ namespace ProjektTIP
         private string ip_adrress;
         public int Ip_adrress { get; set; }
 
-        private Image avatar;
-        public Image Avatar { get; set; }
+        private BitmapImage avatar;
+        public BitmapImage Avatar { get; set; }
 
         public Friend(string nick)
         {
             Nick = nick;
-            avatar = new Image();
+            avatar = new BitmapImage();
+            name = null;
+            last_name = null;
+
+        }
+
+        public void setName(string first_name, string last_name)
+        {
+            Name = first_name;
+            Last_name = last_name;
+        }
+
+        public void setAvatar(string image_path)
+        {
+            var image = new BitmapImage();
+            Avatar = new BitmapImage(new Uri("C:\\avatar-man.png"));
+
+
         }
     }
 }
