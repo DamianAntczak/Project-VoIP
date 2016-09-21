@@ -27,6 +27,12 @@
         <ListBox x:Name="listFriends" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" Margin="0,0,10,10" SelectionChanged="listFriends_SelectionChanged" />
         <Image x:Name="freindImg" Grid.Column="4" Grid.Row="1" HorizontalAlignment="Left" Height="163" Margin="0,0,0,0" VerticalAlignment="Top" Width="159" />
         <Label x:Name="freindLabel" Content="" Grid.Column="4" HorizontalAlignment="Left" Margin="10,0,0,0" Grid.Row="3" VerticalAlignment="Top" Width="139"/>
+        <Image x:Name="star_1" Grid.Column="4" Height="20" Margin="0,26,135,0" VerticalAlignment="Top" Visibility="Hidden" Source="/star.png" HorizontalAlignment="Right" Width="20"/>
+        <Image x:Name="star_2" Grid.Column="4" HorizontalAlignment="Right" Height="20" Margin="0,26,110,0" VerticalAlignment="Top" Width="20" Visibility="Hidden" Source="/star.png"/>
+        <Image x:Name="star_3" Grid.Column="4" HorizontalAlignment="Right" Height="20" Margin="0,26,85,0" VerticalAlignment="Top" Width="20" RenderTransformOrigin="1.024,0.718" Visibility="Hidden" Source="/star.png"/>
+        <Image x:Name="star_4" Grid.Column="4" HorizontalAlignment="Right" Height="20" Margin="0,26,60,0" VerticalAlignment="Top" Width="20" Visibility="Hidden" Source="/star.png"/>
+        <Image x:Name="star_5" Grid.Column="4" HorizontalAlignment="Right" Height="20" Margin="0,26,35,0" VerticalAlignment="Top" Width="20" Visibility="Hidden" RenderTransformOrigin="0.059,0.537" Source="/star.png"/>
+        <Image x:Name="star_6" Grid.Column="4" HorizontalAlignment="Right" Height="20" Margin="0,26,10,0" VerticalAlignment="Top" Width="20" Visibility="Hidden" Source="/star.png"/>
 
     </Grid>
 </Window>

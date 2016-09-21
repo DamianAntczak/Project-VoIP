@@ -26,6 +26,9 @@ namespace ProjektTIP
         private IPAddress send_to_address;
         private IPEndPoint sending_end_point;
 
+        UdpClient listener_audio;
+        IPEndPoint groupEP;
+
         private bool stopCall;
 
         public WaveIn waveSource = null;
@@ -42,6 +45,8 @@ namespace ProjektTIP
             send_to_address = IPAddress.Parse("192.168.0.158");
             sending_end_point = new IPEndPoint(send_to_address, 11000);
 
+            
+
             friends = new Friends();
             var friend = new Friend("Buggi");
             friend.setName("Jakub", "Bugaj");
@@ -52,6 +57,34 @@ namespace ProjektTIP
 
             listFriends.ItemsSource = friends;
             listFriends.DisplayMemberPath = "Nick";
+
+            setFriendStars(3);
+        }
+
+        private void setFriendStars(int value)
+        {
+            if(value > 0 && value < 6)
+            {
+                for(var i = 0; i < value; i++)
+                {
+                    if (i == 0)
+                        star_1.Visibility = Visibility.Visible;
+                    if (i == 1)
+                        star_2.Visibility = Visibility.Visible;
+                    if (i == 2)
+                        star_2.Visibility = Visibility.Visible;
+                    if (i == 3)
+                        star_2.Visibility = Visibility.Visible;
+                    if (i == 4)
+                        star_4.Visibility = Visibility.Visible;
+                    if (i == 5)
+                        star_5.Visibility = Visibility.Visible;
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException();
+            }
         }
 
         private void bConnection_Click(object sender, RoutedEventArgs e)
@@ -72,8 +105,10 @@ namespace ProjektTIP
                 Console.WriteLine(" Exception {0}", send_exception.Message);
             }
 
-            sending_socket_audio = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            sending_end_point = new IPEndPoint(send_to_address, 11122);
+            //sending_socket_audio = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            //sending_end_point = new IPEndPoint(send_to_address, 11122);
+
+            
 
             waveSource = new WaveIn();
             waveSource.WaveFormat = new WaveFormat(44100, 1);
@@ -89,8 +124,8 @@ namespace ProjektTIP
         private void recive_UDP()
         {
             bool done = false;
-            UdpClient listener = new UdpClient(listenPort);
-            IPEndPoint groupEP = new IPEndPoint(IPAddress.Any, listenPort);
+            //UdpClient listener = new UdpClient(listenPort);
+            //IPEndPoint groupEP = new IPEndPoint(IPAddress.Any, listenPort);
 
             
             string received_data = "";
@@ -99,23 +134,27 @@ namespace ProjektTIP
             AllocConsole();
             Console.WriteLine("Test");
 
+            listener_audio = new UdpClient(11122);
+            groupEP = new IPEndPoint(IPAddress.Any, 11122);
+
             try
             {
 
-                while (!done)
-                {
-                    receive_byte_array = listener.Receive(ref groupEP);
-                    AllocConsole();
-                    var recivedString = Encoding.ASCII.GetString(receive_byte_array);
-                    Console.WriteLine( recivedString );
+                //while (!done)
+                //{
+                    //receive_byte_array = listener.Receive(ref groupEP);
+                    //AllocConsole();
+                    //var recivedString = Encoding.ASCII.GetString(receive_byte_array);
+                    //Console.WriteLine( recivedString );
 
-                    if (recivedString.Equals("Hello"))
-                    {
-                        sending_socket.SendTo(Encoding.ASCII.GetBytes("Invite"), sending_end_point);
+                    //if (recivedString.Equals("Hello"))
+                    //{
+                        //sending_socket.SendTo(Encoding.ASCII.GetBytes("Invite"), sending_end_point);
                         var waudio = new Thread(new ThreadStart(recive_audio));
                         waudio.Start();
-                    }
-                }
+                    Console.WriteLine("OK");
+                    //}
+               // }
             }
             catch (Exception e)
             {
@@ -125,8 +164,7 @@ namespace ProjektTIP
 
         private void recive_audio()
         {
-            UdpClient listener_audio = new UdpClient(11122);
-            IPEndPoint groupEP = new IPEndPoint(IPAddress.Any, 11122);
+            
 
             WaveOut _waveOut = new WaveOut();
 
@@ -135,7 +173,8 @@ namespace ProjektTIP
             IWaveProvider provider = new RawSourceWaveStream(
                      new MemoryStream(receive_byte_array), new WaveFormat(44100, 1));
 
-            while (!stopCall)
+
+            while (true)
             {
                 receive_byte_array = listener_audio.Receive(ref groupEP);
                 Console.WriteLine(receive_byte_array);
@@ -144,6 +183,7 @@ namespace ProjektTIP
 
                 _waveOut.Init(provider);
                 _waveOut.Play();
+                Console.WriteLine("Test");
             }
 
         }
