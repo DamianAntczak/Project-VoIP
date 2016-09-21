@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Server___konsola {
-    class User {
+    public class User {
         public int Id { get; set; }
         public string Name { get; set; }
         public string SecondName { get; set; }

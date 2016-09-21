@@ -20,9 +20,9 @@ namespace Server___konsola {
                 if (queueLength > 0) {
                     --queueLength;
                     var clientData = clientPool.Dequeue();
-                    clientData.ipAddress = ipAddress;
-                    clientData.timeOfRequest = DateTime.Now;
-                    clientData.request = request;
+                    clientData.IpAddress = ipAddress;
+                    clientData.TimeOfReqest = DateTime.Now;
+                    clientData.RequestId = request;
                     return clientData;
                 }
                 else {
@@ -32,8 +32,8 @@ namespace Server___konsola {
             }
         }
        public void takeClient(ClientData clientData) {
-            clientData.ipAddress = IPAddress.None;
-            clientData.request = 0;
+            clientData.IpAddress = IPAddress.None;
+            clientData.RequestId = 0;
             clientPool.Enqueue(clientData);
             ++queueLength;
         }
