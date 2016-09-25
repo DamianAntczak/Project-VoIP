@@ -24,22 +24,7 @@ namespace ProjektTIP
         private string last_name;
         public string Last_name { get; set; }
 
-        private int opinion;
-        public int Opinion
-        {
-            get{ return opinion; }
-            set
-            {
-                if(value >= 0 && value <= 5)
-                {
-                    opinion = value;
-                }
-                else
-                {
-                    throw new InvalidOperationException();
-                }
-            }
-        }
+        public int Opinion { get; set; }
 
         private string ip_adrress;
         public int Ip_adrress { get; set; }
@@ -53,20 +38,20 @@ namespace ProjektTIP
             avatar = new BitmapImage();
             name = null;
             last_name = null;
-
+            Opinion = 0;
         }
 
         public void setName(string first_name, string last_name)
         {
             Name = first_name;
             Last_name = last_name;
+            
         }
 
         public void setAvatar(string image_path)
         {
             var image = new BitmapImage();
             Avatar = new BitmapImage(new Uri("C:\\avatar-man.png"));
-
 
         }
     }

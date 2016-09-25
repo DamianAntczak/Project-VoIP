@@ -8,6 +8,8 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Windows;
+using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace ProjektTIP {
@@ -52,6 +54,7 @@ namespace ProjektTIP {
             var friend = new Friend("Buggi");
             friend.setName("Jakub", "Bugaj");
             friend.setAvatar("Azx");
+            friend.Opinion = 5;
             friends.addFriend(friend);
             friends.addFriend("Damian");
             friends.addFriend("Wojtas");
@@ -59,34 +62,51 @@ namespace ProjektTIP {
             listFriends.ItemsSource = friends;
             listFriends.DisplayMemberPath = "Nick";
 
-            setFriendStars(3);
+            //setFriendStars(3);
         }
+
+
 
         private void setFriendStars(int value)
         {
-            if (value > 0 && value < 6)
+            if (value >= 0 && value <= 6)
             {
-                star_1.Visibility = Visibility.Hidden;
-                star_2.Visibility = Visibility.Hidden;
-                star_3.Visibility = Visibility.Hidden;
-                star_4.Visibility = Visibility.Hidden;
-                star_5.Visibility = Visibility.Hidden;
-                star_6.Visibility = Visibility.Hidden;
+                imgStar1.Source = new BitmapImage(new Uri(@"\star-transparent.png", UriKind.Relative));
+                imgStar2.Source = new BitmapImage(new Uri(@"\star-transparent.png", UriKind.Relative));
+                imgStar3.Source = new BitmapImage(new Uri(@"\star-transparent.png", UriKind.Relative));
+                imgStar4.Source = new BitmapImage(new Uri(@"\star-transparent.png", UriKind.Relative));
+                imgStar5.Source = new BitmapImage(new Uri(@"\star-transparent.png", UriKind.Relative));
+                imgStar6.Source = new BitmapImage(new Uri(@"\star-transparent.png", UriKind.Relative));
+
+
+
 
                 for (var i = 0; i < value; i++)
                 {
                     if (i == 0)
-                        star_1.Visibility = Visibility.Visible;
+                    {
+                        imgStar1.Source = new BitmapImage(new Uri(@"\star.png", UriKind.Relative));
+                    }
                     if (i == 1)
-                        star_2.Visibility = Visibility.Visible;
+                    {
+                        imgStar2.Source = new BitmapImage(new Uri(@"\star.png", UriKind.Relative));
+                    }
                     if (i == 2)
-                        star_3.Visibility = Visibility.Visible;
+                    {
+                        imgStar3.Source = new BitmapImage(new Uri(@"\star.png", UriKind.Relative));
+                    }
                     if (i == 3)
-                        star_4.Visibility = Visibility.Visible;
+                    {
+                        imgStar4.Source = new BitmapImage(new Uri(@"\star.png", UriKind.Relative));
+                    }
                     if (i == 4)
-                        star_5.Visibility = Visibility.Visible;
+                    {
+                        imgStar5.Source = new BitmapImage(new Uri(@"\star.png", UriKind.Relative));
+                    }
                     if (i == 5)
-                        star_6.Visibility = Visibility.Visible;
+                    {
+                        imgStar6.Source = new BitmapImage(new Uri(@"\star.png", UriKind.Relative));
+                    }
                 }
             }
             else
@@ -234,10 +254,71 @@ namespace ProjektTIP {
             else {
                 freindLabel.Content = selectedItem.Nick;
                 freindImg.Source = new BitmapImage(new Uri("C:\\avatar-man.png"));
-
-
             }
 
+            setFriendStars(selectedItem.Opinion);
+
+        }
+
+        private void star_1_Click(object sender, RoutedEventArgs e)
+        {
+            if(listFriends.SelectedItem != null)
+            {
+                var friend = (Friend)listFriends.SelectedItem;
+                friend.Opinion = 1;
+                setFriendStars(friend.Opinion);
+            }
+        }
+
+        private void star_2_Click(object sender, RoutedEventArgs e)
+        {
+            if (listFriends.SelectedItem != null)
+            {
+                var friend = (Friend)listFriends.SelectedItem;
+                friend.Opinion = 2;
+                setFriendStars(friend.Opinion);
+            }
+
+        }
+
+        private void star_3_Click(object sender, RoutedEventArgs e)
+        {
+            if (listFriends.SelectedItem != null)
+            {
+                var friend = (Friend)listFriends.SelectedItem;
+                friend.Opinion = 3;
+                setFriendStars(friend.Opinion);
+            }
+        }
+
+        private void star_4_Click(object sender, RoutedEventArgs e)
+        {
+            if (listFriends.SelectedItem != null)
+            {
+                var friend = (Friend)listFriends.SelectedItem;
+                friend.Opinion = 4;
+                setFriendStars(friend.Opinion);
+            }
+        }
+
+        private void star_5_Click(object sender, RoutedEventArgs e)
+        {
+            if (listFriends.SelectedItem != null)
+            {
+                var friend = (Friend)listFriends.SelectedItem;
+                friend.Opinion = 5;
+                setFriendStars(friend.Opinion);
+            }
+        }
+
+        private void star_6_Click(object sender, RoutedEventArgs e)
+        {
+            if (listFriends.SelectedItem != null)
+            {
+                var friend = (Friend)listFriends.SelectedItem;
+                friend.Opinion = 6;
+                setFriendStars(friend.Opinion);
+            }
         }
     }
 }
