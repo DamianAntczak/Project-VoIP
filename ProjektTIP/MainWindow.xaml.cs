@@ -25,6 +25,8 @@ namespace ProjektTIP {
         private IPEndPoint sending_end_point;
         private string audioPath = "test.vaw";
 
+        private volatile bool connected;
+
         UdpClient listener_audio;
         IPEndPoint groupEP;
 
@@ -43,7 +45,7 @@ namespace ProjektTIP {
             send_to_address = IPAddress.Parse("127.0.0.1");
             sending_end_point = new IPEndPoint(send_to_address, 11000);
 
-
+            connected = false;
 
 
             friends = new Friends();
@@ -60,54 +62,81 @@ namespace ProjektTIP {
             setFriendStars(3);
         }
 
-        private void setFriendStars(int value) {
-            if (value > 0 && value < 6) {
-                for (var i = 0; i < value; i++) {
+        private void setFriendStars(int value)
+        {
+            if (value > 0 && value < 6)
+            {
+                star_1.Visibility = Visibility.Hidden;
+                star_2.Visibility = Visibility.Hidden;
+                star_3.Visibility = Visibility.Hidden;
+                star_4.Visibility = Visibility.Hidden;
+                star_5.Visibility = Visibility.Hidden;
+                star_6.Visibility = Visibility.Hidden;
+
+                for (var i = 0; i < value; i++)
+                {
                     if (i == 0)
                         star_1.Visibility = Visibility.Visible;
                     if (i == 1)
                         star_2.Visibility = Visibility.Visible;
                     if (i == 2)
-                        star_2.Visibility = Visibility.Visible;
+                        star_3.Visibility = Visibility.Visible;
                     if (i == 3)
-                        star_2.Visibility = Visibility.Visible;
-                    if (i == 4)
                         star_4.Visibility = Visibility.Visible;
-                    if (i == 5)
+                    if (i == 4)
                         star_5.Visibility = Visibility.Visible;
+                    if (i == 5)
+                        star_6.Visibility = Visibility.Visible;
                 }
             }
-            else {
+            else
+            {
                 throw new InvalidOperationException();
             }
         }
         private void bConnection_Click(object sender, RoutedEventArgs e) {
 
-            byte[] send_buffer = Encoding.ASCII.GetBytes("Hello");
+            if (!connected)
+            {
 
-            try {
-                AllocConsole();
-                Console.WriteLine("Wysłanie hello");
-                sending_socket.SendTo(send_buffer, sending_end_point);
+                byte[] send_buffer = Encoding.ASCII.GetBytes("Hello");
+
+                try
+                {
+                    AllocConsole();
+                    Console.WriteLine("Wysłanie hello");
+                    sending_socket.SendTo(send_buffer, sending_end_point);
 
 
+                }
+                catch (Exception send_exception)
+                {
+                    Console.WriteLine(" Exception {0}", send_exception.Message);
+                }
+
+                sending_socket_audio = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+                sending_end_point = new IPEndPoint(send_to_address, 11122);
+
+                waveSource = new WaveIn();
+                waveSource.WaveFormat = new WaveFormat(44100, 1);
+
+                waveSource.DataAvailable += new EventHandler<WaveInEventArgs>(waveSource_DataAvailable);
+                waveSource.RecordingStopped += new EventHandler<StoppedEventArgs>(waveSource_RecordingStopped);
+
+                waveFile = new WaveFileWriter(audioPath, waveSource.WaveFormat);
+
+                waveSource.StartRecording();
+
+                connected = true;
+
+                bConnection.Content = "Rozłącz";
             }
-            catch (Exception send_exception) {
-                Console.WriteLine(" Exception {0}", send_exception.Message);
+            else
+            {
+                waveSource.StopRecording();
+                connected = false;
+                bConnection.Content = "Połącz";
             }
-
-            sending_socket_audio = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            sending_end_point = new IPEndPoint(send_to_address, 11122);
-
-            waveSource = new WaveIn();
-            waveSource.WaveFormat = new WaveFormat(44100, 1);
-
-            waveSource.DataAvailable += new EventHandler<WaveInEventArgs>(waveSource_DataAvailable);
-            waveSource.RecordingStopped += new EventHandler<StoppedEventArgs>(waveSource_RecordingStopped);
-
-            waveFile = new WaveFileWriter(audioPath, waveSource.WaveFormat);
-
-            waveSource.StartRecording();
         }
 
         private void recive_UDP() {
