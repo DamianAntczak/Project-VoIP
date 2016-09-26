@@ -51,7 +51,7 @@ namespace ProjektTIP
         public void setAvatar(string image_path)
         {
             var image = new BitmapImage();
-            Avatar = new BitmapImage(new Uri("C:\\avatar-man.png"));
+            Avatar = new BitmapImage(new Uri(@"\avatar-man.png",UriKind.Relative));
 
         }
     }
