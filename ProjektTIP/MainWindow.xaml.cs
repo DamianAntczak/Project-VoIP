@@ -28,6 +28,8 @@ namespace ProjektTIP {
         private IPEndPoint sending_end_point;
         private string audioPath = "test.vaw";
 
+        private Friend user;
+
         private volatile bool connected;
 
         UdpClient listener_audio;
@@ -63,6 +65,8 @@ namespace ProjektTIP {
             listFriends.DisplayMemberPath = "Nick";
 
             //setFriendStars(3);
+
+            user = new Friend("Zabka");
         }
 
 
@@ -325,6 +329,13 @@ namespace ProjektTIP {
                 friend.Opinion = 6;
                 setFriendStars(friend.Opinion);
             }
+        }
+
+        private void bSettings_Click(object sender, RoutedEventArgs e)
+        {
+            user.Name = "Jan";
+            var settingWindow = new SettingWindow(ref user);
+            settingWindow.ShowDialog();
         }
     }
 }

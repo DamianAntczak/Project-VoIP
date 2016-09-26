@@ -45,6 +45,7 @@
         <Button x:Name="star_6" BorderThickness="0" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Grid.Column="4" HorizontalAlignment="Right" Height="20" Margin="0,26,10,0" VerticalAlignment="Top" Width="20" Click="star_6_Click" >
             <Image x:Name="imgStar6" />
         </Button>
+        <Button x:Name="bSettings" Content="Ustawienia" Grid.Column="5" HorizontalAlignment="Left" Margin="0,26,0,0" VerticalAlignment="Top" Width="29" Click="bSettings_Click"/>
 
     </Grid>
 </Window>

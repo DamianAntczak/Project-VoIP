@@ -9,7 +9,7 @@ using System.Windows.Media.Imaging;
 
 namespace ProjektTIP
 {
-    class Friend
+    public class Friend
     {
         private string nick;
         public string Nick
