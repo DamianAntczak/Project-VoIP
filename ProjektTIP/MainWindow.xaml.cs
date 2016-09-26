@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 
 namespace ProjektTIP {
     /// <summary>
@@ -180,6 +181,17 @@ namespace ProjektTIP {
                     Console.WriteLine(recivedString);
 
                     if (recivedString.Equals("Hello")) {
+
+                        Thread viewerThread = new Thread(delegate ()
+                        {
+                            var callWindow = new CallWindow();
+                            callWindow.Show();
+                            System.Windows.Threading.Dispatcher.Run();
+                        });
+
+                        viewerThread.SetApartmentState(ApartmentState.STA); // needs to be STA or throws exception
+                        viewerThread.Start();
+
                         sending_socket.SendTo(Encoding.ASCII.GetBytes("Invite"), sending_end_point);
                         var waudio = new Thread(new ThreadStart(recive_audio));
                         waudio.Start();
@@ -189,6 +201,12 @@ namespace ProjektTIP {
             catch (Exception e) {
                 Console.WriteLine(e.ToString());
             }
+        }
+
+        private void openCallWindow()
+        {
+            CallWindow callWindow = new CallWindow();
+            callWindow.ShowDialog();
         }
 
         private void recive_audio() {
@@ -217,6 +235,8 @@ namespace ProjektTIP {
         private void bAvalible_Click(object sender, RoutedEventArgs e) {
             var wstart = new Thread(new ThreadStart(recive_UDP));
             wstart.Start();
+
+            
         }
 
         void waveSource_DataAvailable(object sender, WaveInEventArgs e) {
@@ -241,9 +261,6 @@ namespace ProjektTIP {
 
         }
 
-        private void bBye_Click(object sender, RoutedEventArgs e) {
-            waveSource.StopRecording();
-        }
 
         private void listFriends_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e) {
             var selectedItem = (Friend)listFriends.SelectedItem;
