@@ -36,7 +36,6 @@ namespace ProjektTIP {
         private bool stopCall;
 
         public WaveIn waveSource = null;
-        public WaveFileWriter waveFile = null;
 
         [DllImport("Kernel32")]
         public static extern void AllocConsole();
@@ -139,14 +138,14 @@ namespace ProjektTIP {
                 sending_end_point = new IPEndPoint(send_to_address, 11122);
 
                 waveSource = new WaveIn();
-                waveSource.WaveFormat = new WaveFormat(44100, 1);
+                waveSource.WaveFormat = new WaveFormat(48000,1);
 
                 waveSource.DataAvailable += new EventHandler<WaveInEventArgs>(waveSource_DataAvailable);
                 waveSource.RecordingStopped += new EventHandler<StoppedEventArgs>(waveSource_RecordingStopped);
 
-                waveFile = new WaveFileWriter(audioPath, waveSource.WaveFormat);
 
-                waveSource.StartRecording();
+               waveSource.StartRecording();
+
 
                 connected = true;
 
@@ -234,29 +233,19 @@ namespace ProjektTIP {
 
         private void bAvalible_Click(object sender, RoutedEventArgs e) {
             var wstart = new Thread(new ThreadStart(recive_UDP));
-            wstart.Start();
-
-            
+            wstart.Start();         
         }
 
         void waveSource_DataAvailable(object sender, WaveInEventArgs e) {
-            if (waveFile != null) {
-                waveFile.Write(e.Buffer, 0, e.BytesRecorded);
-                waveFile.Flush();
                 Console.WriteLine("Wysłanie pakietu");
                 sending_socket.SendTo(e.Buffer, sending_end_point);
-            }
+            
         }
 
         void waveSource_RecordingStopped(object sender, StoppedEventArgs e) {
             if (waveSource != null) {
                 waveSource.Dispose();
                 waveSource = null;
-            }
-
-            if (waveFile != null) {
-                waveFile.Dispose();
-                waveFile = null;
             }
 
         }
@@ -270,7 +259,7 @@ namespace ProjektTIP {
             }
             else {
                 freindLabel.Content = selectedItem.Nick;
-                freindImg.Source = new BitmapImage(new Uri("C:\\avatar-man.png"));
+                freindImg.Source = new BitmapImage(new Uri(@"\avatar-man.png",UriKind.Relative));
             }
 
             setFriendStars(selectedItem.Opinion);

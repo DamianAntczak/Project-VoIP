@@ -15,6 +15,7 @@ namespace Server___konsola {
         private const int listenPort = 11001;
         static ClientPool clientPool;
         static TcpListener tcpListener;
+        static string dbName = "UserDB";
         static LiteDatabase dataBase;
         static LiteCollection<User> dataBaseCollection;
         static UserDatabaseOperations userDatabaseOperations;
@@ -22,12 +23,22 @@ namespace Server___konsola {
         static void Main(string[] args) {
             clientPool = new ClientPool();
             tcpListener = new TcpListener(IPAddress.Any, listenPort);
-            dataBase = new LiteDatabase("DB.db");
+            dataBase = new LiteDatabase(dbName);
             dataBaseCollection = dataBase.GetCollection<User>("users");
+            //BazaInit();
             userDatabaseOperations = new UserDatabaseOperations(dataBase, dataBaseCollection);
             var s = userDatabaseOperations.HashPassword("asdfasddlfkassjdflaskdfjassldkfjasdieuvj32kj3 adfsdfasdf j930234jfladsfkja");
             File.WriteAllText("elo.txt", s);
             Console.WriteLine(s);
+
+            var g = Guid.NewGuid();
+            var g2 = new Guid();
+            Console.WriteLine("{0}\n{1}", g.ToString(), g2.ToString());
+
+            List<int> list = new List<int> { 0, 1, 2, 3, 4 };
+            var i = list.IndexOf(3);
+            var i2 = list.IndexOf(6);
+            var i33 = list.Where(x => x < 4);
 
             //tcpListener.Start();
             //dataBase = new LiteDatabase("DB.db");
@@ -79,11 +90,11 @@ namespace Server___konsola {
             // BAZA DANYCH
             Console.WriteLine("Inicjalizacja bazy");
             List<User> userList = new List<User>();
-            userList.Add(new User { Name = "N", SecondName = "SN", Login = "L", PasswordHash = "PASS", Description = "OPIS", Friends = new List<string>() { "2l" } });
-            userList.Add(new User { Name = "2N", SecondName = "2SN", Login = "2l", PasswordHash = "PASS", Description = "OPISSSSSSSSSS", Friends = new List<string>() { "L" } });
-            userList.Add(new User { Name = "3N", SecondName = "3SN", Login = "3L", PasswordHash = "Pass", Description = "COS" });
-            userList.Add(new User { Name = "3N", SecondName = "3SN", Login = "4L", PasswordHash = "Pass", Description = "COS" });
-            using (var db = new LiteDatabase("DB.db")) {
+            userList.Add(new User { Name = "N", SecondName = "SN", Login = "L", PasswordHash = HashPassword("PASS"), Description = "OPIS", ActualIP = string.Empty, SessionID = new Guid() });
+            userList.Add(new User { Name = "2N", SecondName = "2SN", Login = "2l", PasswordHash = HashPassword("PASS"), Description = "OPISSSSSSSSSS", Friends = new List<int>() { 1 }, ActualIP = string.Empty, SessionID = new Guid() });
+            userList.Add(new User { Name = "3N", SecondName = "3SN", Login = "3L", PasswordHash = HashPassword("PASS"), Description = "COS", ActualIP = string.Empty, SessionID = new Guid() });
+            userList.Add(new User { Name = "3N", SecondName = "3SN", Login = "4L", PasswordHash = HashPassword("PASS"), Description = "COS", ActualIP = string.Empty, SessionID = new Guid() });
+            using (var db = new LiteDatabase(dbName)) {
                 var users = db.GetCollection<User>("users");
                 /// ustawienie unikatowej wartości. 
                 users.EnsureIndex(x => x.Login, true);
@@ -107,6 +118,20 @@ namespace Server___konsola {
         /// <param name="data">dane</param>
         public void TakeClientRequest(string IpAddres, string data) {
 
+        }
+
+        public static string HashPassword(string ClientHashedPassword) {
+            //haslo >8 liter sprawdzane po stronie kilenta
+            var byteArrayClientPassword = Encoding.UTF8.GetBytes(ClientHashedPassword);
+            SHA256 sha = new SHA256Managed();
+            sha.Initialize();
+            var hashedPasswordBytes = sha.ComputeHash(byteArrayClientPassword);
+            string result = "";
+            foreach (var h in hashedPasswordBytes) {
+                result += string.Format("{0:x2}", h);
+            }
+            sha.Clear();
+            return result;
         }
     }
 }

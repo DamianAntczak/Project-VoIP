@@ -11,11 +11,12 @@ namespace Server___konsola {
         public string SecondName { get; set; }
         public string Login { get; set; }
         /// <summary>
-        /// Pasword -> ClientHash -> Server -> ServerHash?
+        /// Pasword -> ClientHash -> Server -> ServerHash
         /// </summary>
         public string PasswordHash { get; set; }
         public string Description { get; set; }
         public string ActualIP { get; set; }
-        public List<string> Friends { get; set; }
+        public List<int> Friends { get; set; }
+        public Guid SessionID { get; set; }
     }
 }

@@ -7,26 +7,28 @@ using LiteDB;
 using System.Security.Cryptography;
 
 namespace Server___konsola {
-    public class UserDatabaseOperations :IUserDataBaseOperations {
+    public class UserDatabaseOperations : IUserDataBaseOperations {
 
         public static LiteDatabase dataBase;
         public static LiteCollection<User> dataBaseCollection;
+        public static Guid newGuid;
 
         public UserDatabaseOperations(LiteDatabase ldb, LiteCollection<User> lc) {
             dataBase = ldb;
             dataBaseCollection = lc;
+            newGuid = new Guid();
         }
 
         public UserInfo LookForUser(string Login) {
-            var ui = dataBaseCollection.FindOne(n => n.Login == Login);
+            var ui = FindOneUser(Login);
             UserInfo userInfo = new UserInfo { Login = ui.Login, Name = ui.Name, SecondName = ui.SecondName, Description = ui.Description, ActualIP = ui.ActualIP };
             return userInfo;
         }
 
         public List<UserInfo> LookForUser(string Name, string SecondName) {
-           var ui = dataBaseCollection.Find(n => n.Name == Name && n.SecondName == SecondName);
+            var ui = dataBaseCollection.Find(n => n.Name == Name && n.SecondName == SecondName);
             List<UserInfo> userInfo = new List<UserInfo>();
-            foreach (var u in ui){
+            foreach (var u in ui) {
                 userInfo.Add(new UserInfo { Name = u.Name, SecondName = u.SecondName, Login = u.Login, Description = u.Description, ActualIP = u.ActualIP });
             }
             return userInfo;
@@ -47,9 +49,23 @@ namespace Server___konsola {
             }
         }
 
-        public void AddNewFriendToList(string Login1, string Login2) {
-            throw new NotImplementedException();
+        /// <summary>
+        /// Dodaje przyjaciela do listy
+        /// </summary>
+        /// <param name="Login1"></param>
+        /// <param name="Login2"></param>
+        public void AddNewFriend(Guid SessionID, int UserID, string Login2) {
+            var user = FindOneUser(SessionID, UserID);
+            var friend = FindOneUser(Login2);
+            if(user.Friends.IndexOf(friend.Id) > 0) {
+                user.Friends.Add(friend.Id);
+                friend.Friends.Add(friend.Id);
+                user.Friends.Sort();
+                friend.Friends.Sort();
+            }
         }
+
+
         /// <summary>
         /// dodatkowa weryfikacja z loginem i id
         /// może dodać IP?
@@ -59,8 +75,8 @@ namespace Server___konsola {
         /// <param name="Name"></param>
         /// <param name="SecondName"></param>
         /// <param name="Description"></param>
-        public void ChangeUserData(int UserID, string Login, string Name, string SecondName, string Description) {
-            var user = dataBaseCollection.Find(x => x.Id == UserID && x.Login == Login).First();
+        public void ChangeUserData(Guid SessionID, int UserID, string Name, string SecondName, string Description) {
+            var user = FindOneUser(SessionID, UserID);
             if (user != null) {
                 if (Name != null && user.Name != Name)
                     user.Name = Name;
@@ -72,8 +88,8 @@ namespace Server___konsola {
             }
         }
 
-        public void ChangeUserPassword(int UserID, string Login, string OldPasswordHash, string NewPasswordHash) {
-            var user = dataBaseCollection.FindOne(x => x.Id == UserID && x.Login == Login);
+        public void ChangeUserPassword(Guid SessionID, int UserID, string OldPasswordHash, string NewPasswordHash) {
+            var user = FindOneUser(SessionID, UserID);
             var oldPassword = HashPassword(OldPasswordHash);
             var newPassword = HashPassword(NewPasswordHash);
             if (oldPassword != null && oldPassword == user.PasswordHash && newPassword != null)
@@ -81,12 +97,22 @@ namespace Server___konsola {
         }
 
         public UserLogin TryToLoginUser(string Login, string Password) {
-            var user = dataBaseCollection.FindOne(x => x.Login == Login);
+            var user = FindOneUser(Login);
             var userHashedPassword = user.PasswordHash;
             var passwordHashToCompare = HashPassword(Password);
-            if (userHashedPassword == passwordHashToCompare)
-                return new UserLogin { Name = user.Name, SecondName = user.SecondName, Description = user.Description,
-                    Login = user.Login, Id = user.Id, SessionID = Guid.NewGuid() } ;
+            if (userHashedPassword == passwordHashToCompare) {
+                Guid sessionId = Guid.NewGuid();
+                user.SessionID = sessionId;
+                dataBaseCollection.Update(user);
+                return new UserLogin {
+                    Name = user.Name,
+                    SecondName = user.SecondName,
+                    Description = user.Description,
+                    Login = user.Login,
+                    Id = user.Id,
+                    SessionID = sessionId
+                };
+            }
             else
                 return new UserLogin();
         }
@@ -106,13 +132,40 @@ namespace Server___konsola {
             //Console.WriteLine(hashedPasss);
             return result;
         }
-        public byte[] HashPasswordReturnBytes(string ClientHashedPassword) {
-            var byteArrayClientPassword = Encoding.UTF8.GetBytes(ClientHashedPassword);
-            var sha = new SHA256Managed();
-            sha.Initialize();
-            var hashedPasswordBytes = sha.ComputeHash(byteArrayClientPassword);
-            sha.Clear();
-            return hashedPasswordBytes;
+
+        public void LogoutUser(Guid SessionID, int UserID) {
+            var user = FindOneUser(SessionID, UserID);
+            user.SessionID = newGuid;
+            user.ActualIP = string.Empty;
+            dataBaseCollection.Update(user);
+        }
+        
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="SessionID"></param>
+        /// <param name="UserID"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"/>
+        public User FindOneUser(Guid SessionID, int UserID) {
+            if (SessionID != null && SessionID != newGuid && UserID > 0)
+                return dataBaseCollection.FindOne(x => x.Id == UserID && x.SessionID == SessionID);
+            else
+                throw new ArgumentException("SessionID is null or empty(00000..) or UserID < 1", "SessionID || UserID");
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="Login"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"/>
+        public User FindOneUser(string Login) {
+            if (Login != null && Login != string.Empty)
+                return dataBaseCollection.FindOne(x =>x.Login == Login);
+            else
+                throw new ArgumentException("Login is null or empty", "Login");
         }
     }
 }

@@ -20,11 +20,14 @@ namespace Server___konsola {
         /// <returns></returns>
         UserInfo LookForUser(string Login);
         bool TryRegisterNewUser(string Name, string SecondName, string Login, string PasswordHash, string Description);
-        void AddNewFriendToList(string Login1, string Login2);
-        void ChangeUserData(int UserID, string Login, string Name, string SecondName, string Description);
-        void ChangeUserPassword(int UserID, string Login, string OldPasswordHash, string NewPasswordHash);
+        void AddNewFriend(Guid SessionID, int UserID, string Login2);
+        void ChangeUserData(Guid SessionID, int UserID, string Name, string SecondName, string Description);
+        void ChangeUserPassword(Guid SessionID, int UserID, string OldPasswordHash, string NewPasswordHash);
         UserLogin TryToLoginUser(string Login, string Password);
+        void LogoutUser(Guid SessionID, int UserID);
         string HashPassword(string ClientHashedPassword);
+        User FindOneUser(Guid SessionID, int UserID);
+        User FindOneUser(string Login);
 
     }
 }
