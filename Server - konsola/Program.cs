@@ -28,7 +28,6 @@ namespace Server___konsola {
         static RequestsCodes requestCode;
 
         //--------------
-        static JsonClassResponse<UserInfo> ji;
 
         const string odebrano = "ODEBRANO";
         static void Main(string[] args) {
@@ -40,7 +39,7 @@ namespace Server___konsola {
             JsonClassRequest jcr = new JsonClassRequest();
 
 
-            // BazaInit();
+            BazaInit();
                 userDatabaseOperations = new UserDatabaseOperations(dataBase, dataBaseCollection);
             tcpListener.Start();
 
@@ -93,6 +92,9 @@ namespace Server___konsola {
             userList.Add(new User { Name = "2N", SecondName = "2SN", Login = "2l", PasswordHash = HashPassword("PASS"), Description = "OPISSSSSSSSSS", Friends = new List<int>() { 1 }, ActualIP = string.Empty, SessionID = new Guid() });
             userList.Add(new User { Name = "3N", SecondName = "3SN", Login = "3L", PasswordHash = HashPassword("PASS"), Description = "COS", ActualIP = string.Empty, SessionID = new Guid() });
             userList.Add(new User { Name = "3N", SecondName = "3SN", Login = "4L", PasswordHash = HashPassword("PASS"), Description = "COS", ActualIP = string.Empty, SessionID = new Guid() });
+            userList.Add(new User { Name = "Damian", SecondName = "Damian", Login = "Damian",PasswordHash = "955992b0608a67000c4825ac7ca7f047bdccb70a69024061374499fed58fb534", Description = "COS", ActualIP = string.Empty, SessionID = new Guid() });
+            userList.Add(new User { Name = "Szymon", SecondName = "Szymon", Login = "Szymon", PasswordHash = "955992b0608a67000c4825ac7ca7f047bdccb70a69024061374499fed58fb534", Description = "COS", ActualIP = string.Empty, SessionID = new Guid() });
+
             using (var db = new LiteDatabase(dbName)) {
                 var users = db.GetCollection<User>("users");
                 /// ustawienie unikatowej wartości. 
