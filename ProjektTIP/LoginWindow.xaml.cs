@@ -60,17 +60,12 @@ namespace ProjektTIP
 
             string json = JsonConvert.SerializeObject(request);
             var x = await ConnectToServer(json);
+            var login = JsonConvert.DeserializeObject<JsonClassResponse<UserLogin>>(x);
+            UserLogin userLogin = login.Response;
 
-            if (textNick.Text.Equals("user") && passwordBox.Password.Equals("user"))
+            if (!userLogin.SessionID.Equals(new Guid()))
             {
                 this.DialogResult = true;
-                //this.Close();
-                //var user = new SharedClasses.User();
-                //user.Login = textNick.Text;
-                //user.PasswordHash = HashPassword(passwordBox.Password);
-
-
-                //MessageBox.Show(json);
 
             }
             else
