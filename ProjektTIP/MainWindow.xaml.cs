@@ -71,7 +71,10 @@ namespace ProjektTIP {
             user = new Friend("Zabka");
 
             var loginWindow = new LoginWindow();
-            loginWindow.ShowDialog();
+            if (loginWindow.ShowDialog() == false)
+            {
+                Application.Current.Shutdown();
+            }
         }
 
 

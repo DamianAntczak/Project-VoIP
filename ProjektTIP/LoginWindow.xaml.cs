@@ -28,6 +28,7 @@ namespace ProjektTIP
         {
             if(textNick.Text.Equals("user") && passwordBox.Password.Equals("user"))
             {
+                this.DialogResult = true;
                 this.Close();
             }
             else
@@ -36,9 +37,5 @@ namespace ProjektTIP
             }
         }
 
-        private void LoginWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            App.Current.Shutdown();
-        }
     }
 }
