@@ -12,6 +12,7 @@ namespace SharedClasses {
         public string Description { get; set; }
         public int Id { get; set; }
         public Guid SessionID { get; set; }
+        public List<UserInfo> Friends { get; set; }
 
         public static UserLogin Convert(User user) {
             return new UserLogin {

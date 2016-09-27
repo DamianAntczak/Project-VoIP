@@ -127,7 +127,7 @@ namespace Server___konsola {
                         JsonClassResponse<UserLogin> response = new JsonClassResponse<UserLogin> {
                             RID = jsonRequest.RID,
                             RequestCode = jsonRequest.RequestCode,
-                            Response = userLogin
+                            Response = userLogin,
                         };
                         return JsonConvert.SerializeObject(response);
 

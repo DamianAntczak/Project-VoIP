@@ -22,7 +22,7 @@ namespace Server___konsola {
 
         public UserInfo LookForUser(string Login) {
             var ui = FindOneUser(Login);
-            UserInfo userInfo = new UserInfo { Login = ui.Login, Name = ui.Name, SecondName = ui.SecondName, Description = ui.Description, ActualIP = ui.ActualIP };
+            UserInfo userInfo = new UserInfo { Login = ui.Login, Name = ui.Name, SecondName = ui.SecondName, Description = ui.Description };
             return userInfo;
         }
 
@@ -30,7 +30,7 @@ namespace Server___konsola {
             var ui = dataBaseCollection.Find(n => n.Name == Name && n.SecondName == SecondName);
             List<UserInfo> userInfo = new List<UserInfo>();
             foreach (var u in ui) {
-                userInfo.Add(new UserInfo { Name = u.Name, SecondName = u.SecondName, Login = u.Login, Description = u.Description, ActualIP = u.ActualIP });
+                userInfo.Add(new UserInfo { Name = u.Name, SecondName = u.SecondName, Login = u.Login, Description = u.Description });
             }
             return userInfo;
         }
@@ -58,7 +58,7 @@ namespace Server___konsola {
         public void AddNewFriend(Guid SessionID, int UserID, string Login2) {
             var user = FindOneUser(SessionID, UserID);
             var friend = FindOneUser(Login2);
-            if(user.Friends.IndexOf(friend.Id) > 0) {
+            if (user.Friends.IndexOf(friend.Id) > 0) {
                 user.Friends.Add(friend.Id);
                 friend.Friends.Add(friend.Id);
                 user.Friends.Sort();
@@ -98,24 +98,40 @@ namespace Server___konsola {
         }
 
         public UserLogin TryToLoginUser(string Login, string Password) {
-            var user = FindOneUser(Login);
-            var userHashedPassword = user.PasswordHash;
-            var passwordHashToCompare = HashPassword(Password);
-            if (userHashedPassword == passwordHashToCompare) {
-                Guid sessionId = Guid.NewGuid();
-                user.SessionID = sessionId;
-                dataBaseCollection.Update(user);
-                return new UserLogin {
-                    Name = user.Name,
-                    SecondName = user.SecondName,
-                    Description = user.Description,
-                    Login = user.Login,
-                    Id = user.Id,
-                    SessionID = sessionId
-                };
+            try {
+                var user = FindOneUser(Login);
+                var userHashedPassword = user.PasswordHash;
+                var passwordHashToCompare = HashPassword(Password);
+                if (userHashedPassword == passwordHashToCompare) {
+                    Guid sessionId = Guid.NewGuid();
+                    user.SessionID = sessionId;
+                    dataBaseCollection.Update(user);
+                    return new UserLogin {
+                        Name = user.Name,
+                        SecondName = user.SecondName,
+                        Description = user.Description,
+                        Login = user.Login,
+                        Id = user.Id,
+                        SessionID = sessionId,
+                        Friends = GetFriendsInfo(user.Friends)
+                    };
+                }
+                else
+                    return new UserLogin();
             }
-            else
+            catch (ArgumentException e) {
+                Console.WriteLine(e.StackTrace);
+                Console.WriteLine(e.Message);
                 return new UserLogin();
+            }
+        }
+
+        private List<UserInfo> GetFriendsInfo(List<int> friendsIds) {
+            List<UserInfo> userFriends = new List<UserInfo>();
+            foreach (var friend in friendsIds) {
+              userFriends.Add(FindOneUserInfo(friend));
+            }
+            return userFriends;
         }
 
         public string HashPassword(string ClientHashedPassword) {
@@ -139,7 +155,7 @@ namespace Server___konsola {
             user.ActualIP = string.Empty;
             dataBaseCollection.Update(user);
         }
-        
+
 
         /// <summary>
         /// 
@@ -163,7 +179,13 @@ namespace Server___konsola {
         /// <exception cref="ArgumentException"/>
         public User FindOneUser(string Login) {
             if (Login != null && Login != string.Empty)
-                return dataBaseCollection.FindOne(x =>x.Login == Login);
+                return dataBaseCollection.FindOne(x => x.Login == Login);
+            else
+                throw new ArgumentException("Login is null or empty", "Login");
+        }
+        public UserInfo FindOneUserInfo(int Id) {
+            if (Id>0)
+                return UserInfo.Convert(dataBaseCollection.FindOne(x => x.Id == Id));
             else
                 throw new ArgumentException("Login is null or empty", "Login");
         }
