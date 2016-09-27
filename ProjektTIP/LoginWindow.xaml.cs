@@ -16,6 +16,7 @@ using Newtonsoft.Json;
 using System.IO;
 using System.Net.Sockets;
 using System.Net;
+using SharedClasses;
 
 namespace ProjektTIP
 {
@@ -57,7 +58,12 @@ namespace ProjektTIP
                 var user = new SharedClasses.User();
                 user.Login = textNick.Text;
                 user.PasswordHash = HashPassword(passwordBox.Password);
-                string json = JsonConvert.SerializeObject(user);
+                JsonClassRequest request = new JsonClassRequest() {
+                    RID = 10133,
+                    RequestCode = (int)RequestsCodes.HELLO,
+                    Parameters = new List<string>() { "smolec", "haslo" }
+                };
+                string json = JsonConvert.SerializeObject(request);
                 MessageBox.Show(json);
 
 
@@ -76,8 +82,9 @@ namespace ProjektTIP
             {
                 await tcpClient.ConnectAsync(Settings.ServerAddress, Settings.ServerPort);
                 var writer = new StreamWriter(tcpClient.GetStream(), Encoding.UTF8);
+                writer.AutoFlush = true;
                 var reader = new StreamReader(tcpClient.GetStream(), Encoding.UTF8);
-                writer.WriteLine(json);
+                await writer.WriteLineAsync(json);
                 var responseString = await reader.ReadLineAsync();
                 return true;
             }

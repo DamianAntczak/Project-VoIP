@@ -39,8 +39,9 @@ namespace Server___konsola {
             dataBaseCollection = dataBase.GetCollection<User>("users");
             JsonClassRequest jcr = new JsonClassRequest();
 
+
             // BazaInit();
-            userDatabaseOperations = new UserDatabaseOperations(dataBase, dataBaseCollection);
+                userDatabaseOperations = new UserDatabaseOperations(dataBase, dataBaseCollection);
             tcpListener.Start();
 
             while (true) {
@@ -64,21 +65,16 @@ namespace Server___konsola {
                 if (tcpClient.Connected) {
                     while (true) {
                         var reader = new StreamReader(tcpClient.GetStream(), Encoding.UTF8);
-                        var json = reader.ReadLine();
-                        if (json != null) {
-                            if (json != "") {
-                                JsonClassRequest jsonRequest = JsonConvert.DeserializeObject<JsonClassRequest>(json);
-                                var responseString = TakeClientRequest(jsonRequest);
-                                Console.WriteLine(responseString);
-                                var writer = new StreamWriter(tcpClient.GetStream(), Encoding.UTF8);
-                                writer.WriteLine(responseString);
-                                break;
-                            }
-                            else {//pusta linia = koniec?
-                                var writer = new StreamWriter(tcpClient.GetStream(), Encoding.UTF8);
-                                writer.WriteLine(odebrano);
-                                break;
-                            }
+                        string json = "";
+
+                        
+                        if (reader != null && (json = reader.ReadLine()) != null) {
+                            JsonClassRequest jsonRequest = JsonConvert.DeserializeObject<JsonClassRequest>(json);
+                            var responseString = TakeClientRequest(jsonRequest);
+                            Console.WriteLine(responseString);
+                            var writer = new StreamWriter(tcpClient.GetStream(), Encoding.UTF8);
+                            writer.WriteLine(responseString);
+                            break;
                         }
                         else
                             break;
