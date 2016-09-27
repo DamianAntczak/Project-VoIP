@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjektTIP", "ProjektTIP\Pr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server - konsola", "Server - konsola\Server - konsola.csproj", "{214F09E4-9355-420D-86EF-23A332967643}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedClasses", "SharedClasses\SharedClasses.csproj", "{33FFBD11-9828-464B-98C6-1BBE0E375397}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{214F09E4-9355-420D-86EF-23A332967643}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{214F09E4-9355-420D-86EF-23A332967643}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{214F09E4-9355-420D-86EF-23A332967643}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33FFBD11-9828-464B-98C6-1BBE0E375397}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33FFBD11-9828-464B-98C6-1BBE0E375397}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33FFBD11-9828-464B-98C6-1BBE0E375397}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33FFBD11-9828-464B-98C6-1BBE0E375397}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

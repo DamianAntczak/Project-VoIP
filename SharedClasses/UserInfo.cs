@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Server___konsola {
+namespace SharedClasses {
     public class UserInfo {
         public string Name { get; set; }
         public string SecondName { get; set; }

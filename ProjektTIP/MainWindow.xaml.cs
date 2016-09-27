@@ -12,6 +12,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using SharedClasses;
+
 
 namespace ProjektTIP {
     /// <summary>
@@ -19,7 +21,7 @@ namespace ProjektTIP {
     /// </summary>
     public partial class MainWindow : Window {
         private const int listenPort = 11000;
-
+        
         private Friends friends;
 
         private Socket sending_socket;

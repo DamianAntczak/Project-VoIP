@@ -3,8 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SharedClasses;
 
 namespace Server___konsola {
+    /// <summary>
+    /// Interface of database operations.
+    /// </summary>
     interface IUserDataBaseOperations {
         /// <summary>
         /// Zwraca użytkowników, którzy mają pasujące imię i nazwisko.

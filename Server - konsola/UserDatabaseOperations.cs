@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LiteDB;
 using System.Security.Cryptography;
+using SharedClasses;
 
 namespace Server___konsola {
     public class UserDatabaseOperations : IUserDataBaseOperations {

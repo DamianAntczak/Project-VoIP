@@ -8,84 +8,91 @@ using System.IO;
 using System.Net.Sockets;
 using System.Net;
 using LiteDB;
+using Newtonsoft.Json;
 using System.Security;
 using System.Security.Cryptography;
+using SharedClasses;
+
+
 namespace Server___konsola {
     class Program {
+        static bool theEnd;
+
         private const int listenPort = 11001;
         static ClientPool clientPool;
         static TcpListener tcpListener;
-        static string dbName = "UserDB";
+        static string dbName = "UserDB.db";
         static LiteDatabase dataBase;
         static LiteCollection<User> dataBaseCollection;
         static UserDatabaseOperations userDatabaseOperations;
+
+        //--------------
+        static JsonClassResponse<UserInfo> ji;
+        
         const string odebrano = "ODEBRANO";
         static void Main(string[] args) {
+            theEnd = false;
             clientPool = new ClientPool();
             tcpListener = new TcpListener(IPAddress.Any, listenPort);
             dataBase = new LiteDatabase(dbName);
             dataBaseCollection = dataBase.GetCollection<User>("users");
-            //BazaInit();
+            JsonClassRequest jcr = new JsonClassRequest();
+            
+           // BazaInit();
             userDatabaseOperations = new UserDatabaseOperations(dataBase, dataBaseCollection);
-            var s = userDatabaseOperations.HashPassword("asdfasddlfkassjdflaskdfjassldkfjasdieuvj32kj3 adfsdfasdf j930234jfladsfkja");
-            File.WriteAllText("elo.txt", s);
-            Console.WriteLine(s);
+            tcpListener.Start();
 
-            var g = Guid.NewGuid();
-            var g2 = new Guid();
-            Console.WriteLine("{0}\n{1}", g.ToString(), g2.ToString());
+            while (true) {
+                Listener();
+                var user = dataBaseCollection.FindOne(x => x.Login == "2l");
+                string json = JsonConvert.SerializeObject(UserLogin.Convert(user));
 
-            List<int> list = new List<int> { 0, 1, 2, 3, 4 };
-            var i = list.IndexOf(3);
-            var i2 = list.IndexOf(6);
-            var i33 = list.Where(x => x < 4);
+                Console.WriteLine(json);
+                if (theEnd == true)
+                    break;
+            }
 
-            //tcpListener.Start();
-            //dataBase = new LiteDatabase("DB.db");
-            //dataBaseCollection = dataBase.GetCollection<User>("users");
-            //Listener();
 
-            //users.Clear();
-            //using (var db = new LiteDatabase("DB.db")) {
-            //    db.GetDatabaseInfo();
-            //    var b = db.CollectionExists("users");
-            //    var col = db.GetCollection("users");
-            //    var i = col.Count();
-            //    var w = col.FindAll();
-            //    foreach (var u in w) {
-            //        Console.WriteLine(u.ToString());
-            //    }
-            //}
-            // BazaInit();
             Console.ReadKey();
-            //tcpListener.Stop();
+            tcpListener.Stop();
         }
 
-        static public async Task<string> Listener() {
-            Console.WriteLine("Czekam");
-            SecureString ss = new SecureString();
-            using (var tcpClient = await tcpListener.AcceptTcpClientAsync()) {
+        public static void Listener() {
+            Console.WriteLine("Połączono");
+            using (var tcpClient = tcpListener.AcceptTcpClient()) {
                 if (tcpClient.Connected) {
                     while (true) {
+                        Console.WriteLine(tcpClient.Client.RemoteEndPoint.ToString());
+                        ji = new JsonClassResponse<UserInfo> {
+                            Code = (int)RequestsCodes.LOOK_FOR_USER_BY_LOGIN,
+                            IP = tcpClient.Client.RemoteEndPoint.ToString(),
+                            RID = 000001222,
+                            Response = UserInfo.Convert(dataBaseCollection.FindOne(x => x.Login == "2l"))
+                        };
+                        Console.WriteLine(JsonConvert.SerializeObject(ji));
                         var reader = new StreamReader(tcpClient.GetStream(), Encoding.UTF8);
-                        var line = await reader.ReadLineAsync();
-                        var commands = line.Split(" ".ToCharArray());
-                        foreach (var item in commands) {
-                            Console.WriteLine(item);
+                        var line = reader.ReadLine();
+                        if (line != null) {
+                            var commands = line.Split(" ".ToCharArray());
+                            foreach (var item in commands) {
+                                Console.WriteLine(item);
+                            }
+                            if (line != null)
+                                Console.WriteLine(line);
+                            else {//pusta linia = koniec?
+                                var writer = new StreamWriter(tcpClient.GetStream(), Encoding.UTF8);
+                                writer.WriteLine(odebrano);
+                                break;
+                            }
                         }
-                        if (line != null)
-                            Console.WriteLine(line);
-                        else {//pusta linia = koniec?
-                            var writer = new StreamWriter(tcpClient.GetStream(), Encoding.UTF8);
-                            await writer.WriteLineAsync(odebrano);
+                        else
                             break;
-                        }
                     }
                 }
             }
-            Console.WriteLine("Połączono!");
-            return "1";
+            Console.WriteLine("OK");
         }
+
         static public void BazaInit() {
             // BAZA DANYCH
             Console.WriteLine("Inicjalizacja bazy");
