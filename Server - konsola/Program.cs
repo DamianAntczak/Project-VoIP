@@ -39,7 +39,7 @@ namespace Server___konsola {
             JsonClassRequest jcr = new JsonClassRequest();
 
 
-            BazaInit();
+            //BazaInit();
                 userDatabaseOperations = new UserDatabaseOperations(dataBase, dataBaseCollection);
             tcpListener.Start();
 

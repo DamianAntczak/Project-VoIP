@@ -128,8 +128,10 @@ namespace Server___konsola {
 
         private List<UserInfo> GetFriendsInfo(List<int> friendsIds) {
             List<UserInfo> userFriends = new List<UserInfo>();
-            foreach (var friend in friendsIds) {
-              userFriends.Add(FindOneUserInfo(friend));
+            if (friendsIds != null) {
+                foreach (var friend in friendsIds) {
+                    userFriends.Add(FindOneUserInfo(friend));
+                }
             }
             return userFriends;
         }
