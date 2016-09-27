@@ -49,7 +49,7 @@ namespace ProjektTIP
             return result;
         }
 
-        private void bLogin_Click(object sender, RoutedEventArgs e)
+        private async void bLogin_Click(object sender, RoutedEventArgs e)
         {
             JsonClassRequest request = new JsonClassRequest()
             {
@@ -59,7 +59,7 @@ namespace ProjektTIP
             };
 
             string json = JsonConvert.SerializeObject(request);
-            var x = ConnectToServer(json);
+            var x = await ConnectToServer(json);
 
             if (textNick.Text.Equals("user") && passwordBox.Password.Equals("user"))
             {
@@ -79,7 +79,7 @@ namespace ProjektTIP
             }
         }
 
-        async Task<bool> ConnectToServer(string json)
+        async Task<string> ConnectToServer(string json)
         {
             using (var tcpClient = new TcpClient())
             {
@@ -89,7 +89,7 @@ namespace ProjektTIP
                 var reader = new StreamReader(tcpClient.GetStream(), Encoding.UTF8);
                 await writer.WriteLineAsync(json);
                 var responseString = await reader.ReadLineAsync();
-                return true;
+                return responseString;
             }
         }
 

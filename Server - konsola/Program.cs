@@ -64,6 +64,8 @@ namespace Server___konsola {
                 if (tcpClient.Connected) {
                     while (true) {
                         var reader = new StreamReader(tcpClient.GetStream(), Encoding.UTF8);
+                        var writer = new StreamWriter(tcpClient.GetStream(), Encoding.UTF8);
+                        writer.AutoFlush = true;
                         string json = "";
 
                         
@@ -71,7 +73,6 @@ namespace Server___konsola {
                             JsonClassRequest jsonRequest = JsonConvert.DeserializeObject<JsonClassRequest>(json);
                             var responseString = TakeClientRequest(jsonRequest);
                             Console.WriteLine(responseString);
-                            var writer = new StreamWriter(tcpClient.GetStream(), Encoding.UTF8);
                             writer.WriteLine(responseString);
                             break;
                         }
