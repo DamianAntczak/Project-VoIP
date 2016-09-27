@@ -1,6 +1,10 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,22 +16,54 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using Newtonsoft.Json;
-using System.IO;
-using System.Net.Sockets;
-using System.Net;
 
 namespace ProjektTIP
 {
     /// <summary>
-    /// Interaction logic for LoginWindow.xaml
+    /// Interaction logic for RegistrationWindow.xaml
     /// </summary>
-    public partial class LoginWindow : Window
+    public partial class RegistrationWindow : Window
     {
+        private SharedClasses.User newUser;
+        private bool validation;
 
-        public LoginWindow()
+        public RegistrationWindow()
         {
             InitializeComponent();
+            newUser = new SharedClasses.User();
+            this.DataContext = this.newUser;
+            validation = true;
+        }
+
+        private void bRegister_Click(object sender, RoutedEventArgs e)
+        {
+            if (String.IsNullOrEmpty(tNazwisko.Text))
+                validation = false;
+            if (String.IsNullOrEmpty(tImie.Text))
+                validation = false;
+            if (String.IsNullOrEmpty(tLogin.Text))
+                validation = false;
+            if (!password.Password.Equals(passwordConfirm.Password))
+                validation = false;
+
+
+            if (validation == true)
+            {
+
+                newUser.PasswordHash = HashPassword(password.Password);
+
+                string json = JsonConvert.SerializeObject(newUser);
+                MessageBox.Show(json);
+
+                var x = ConnectToServer(json);
+
+            }
+            else
+            {
+                MessageBox.Show("Niepoprawne dane");
+            }
+
+
         }
 
         public string HashPassword(string ClientHashedPassword)
@@ -48,28 +84,6 @@ namespace ProjektTIP
             return result;
         }
 
-        private void bLogin_Click(object sender, RoutedEventArgs e)
-        {
-            if(textNick.Text.Equals("user") && passwordBox.Password.Equals("user"))
-            {
-                this.DialogResult = true;
-                this.Close();
-                var user = new SharedClasses.User();
-                user.Login = textNick.Text;
-                user.PasswordHash = HashPassword(passwordBox.Password);
-                string json = JsonConvert.SerializeObject(user);
-                MessageBox.Show(json);
-
-
-                var x = ConnectToServer(json);
-
-            }
-            else
-            {
-                lInfo.Content = "Podano błędne dane";
-            }
-        }
-
         async Task<bool> ConnectToServer(string json)
         {
             using (var tcpClient = new TcpClient())
@@ -81,12 +95,6 @@ namespace ProjektTIP
                 var responseString = await reader.ReadLineAsync();
                 return true;
             }
-        }
-
-        private void button_Click(object sender, RoutedEventArgs e)
-        {
-            var registerWindow = new RegistrationWindow();
-            registerWindow.Show();
         }
     }
 }

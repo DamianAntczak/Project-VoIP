@@ -1,0 +1,40 @@
+﻿<Window x:Class="ProjektTIP.RegistrationWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ProjektTIP"
+        mc:Ignorable="d"
+        Title="Rejestracja" Height="200" Width="250"
+        ResizeMode="NoResize">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.25*" />
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="0.25*" />
+            <ColumnDefinition Width="2.5*" />
+            <ColumnDefinition Width="0.25*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.1*" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="0.1*" />
+        </Grid.RowDefinitions>
+        <Label x:Name="label1" Content="Login" Grid.Column="1" HorizontalAlignment="Right" Grid.Row="1" />
+        <Label x:Name="label2" Content="Imię" Grid.Column="1" HorizontalAlignment="Right" Grid.Row="2" />
+        <Label x:Name="label3" Content="Nazwisko" Grid.Column="1" HorizontalAlignment="Right"  Grid.Row="3" />
+        <Label x:Name="label4" Content="Hasło" Grid.Column="1" HorizontalAlignment="Right" Grid.Row="4" />
+        <Label x:Name="label5" Content="Powtórz hasło" Grid.Column="1" HorizontalAlignment="Right"  Grid.Row="5" />
+        <TextBox x:Name="tLogin" Grid.Column="3" HorizontalAlignment="Left" Height="23" Grid.Row="1" TextWrapping="Wrap" Text="{Binding Login}" VerticalAlignment="Top" Width="106"/>
+        <TextBox x:Name="tImie" Grid.Column="3" HorizontalAlignment="Left" Height="23" Grid.Row="2" TextWrapping="Wrap" Text="{Binding Name}" VerticalAlignment="Top" Width="106"/>
+        <TextBox x:Name="tNazwisko" Grid.Column="3" HorizontalAlignment="Left" Height="23" Grid.Row="3" TextWrapping="Wrap" Text="{Binding SecondName}" VerticalAlignment="Top" Width="106"/>
+        <PasswordBox x:Name="password" Grid.Column="3" HorizontalAlignment="Left"  Grid.Row="4" VerticalAlignment="Top" Width="106" Margin="0,5,0,0"/>
+        <PasswordBox x:Name="passwordConfirm" Grid.Column="3" HorizontalAlignment="Left"  Grid.Row="5" VerticalAlignment="Top" Width="106" Margin="0,6,0,0"/>
+        <Button x:Name="bRegister" Content="Zarejestruj się" Grid.Column="3" HorizontalAlignment="Left" Margin="0,2,0,0" Grid.Row="6" VerticalAlignment="Top" Width="106" Click="bRegister_Click"/>
+    </Grid>
+</Window>
