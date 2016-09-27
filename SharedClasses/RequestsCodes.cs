@@ -1,6 +1,5 @@
 ﻿namespace SharedClasses {
 public enum RequestsCodes {
-        GET_REQUESTS_LIST = 0,
         REGISTER = 10,
         HELLO = 20,
         ADD_FRIEND_TO_LIST = 30,

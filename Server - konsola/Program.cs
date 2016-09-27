@@ -25,10 +25,11 @@ namespace Server___konsola {
         static LiteDatabase dataBase;
         static LiteCollection<User> dataBaseCollection;
         static UserDatabaseOperations userDatabaseOperations;
+        static RequestsCodes requestCode;
 
         //--------------
         static JsonClassResponse<UserInfo> ji;
-        
+
         const string odebrano = "ODEBRANO";
         static void Main(string[] args) {
             theEnd = false;
@@ -37,8 +38,8 @@ namespace Server___konsola {
             dataBase = new LiteDatabase(dbName);
             dataBaseCollection = dataBase.GetCollection<User>("users");
             JsonClassRequest jcr = new JsonClassRequest();
-            
-           // BazaInit();
+
+            // BazaInit();
             userDatabaseOperations = new UserDatabaseOperations(dataBase, dataBaseCollection);
             tcpListener.Start();
 
@@ -62,23 +63,17 @@ namespace Server___konsola {
             using (var tcpClient = tcpListener.AcceptTcpClient()) {
                 if (tcpClient.Connected) {
                     while (true) {
-                        Console.WriteLine(tcpClient.Client.RemoteEndPoint.ToString());
-                        ji = new JsonClassResponse<UserInfo> {
-                            Code = (int)RequestsCodes.LOOK_FOR_USER_BY_LOGIN,
-                            IP = tcpClient.Client.RemoteEndPoint.ToString(),
-                            RID = 000001222,
-                            Response = UserInfo.Convert(dataBaseCollection.FindOne(x => x.Login == "2l"))
-                        };
-                        Console.WriteLine(JsonConvert.SerializeObject(ji));
                         var reader = new StreamReader(tcpClient.GetStream(), Encoding.UTF8);
-                        var line = reader.ReadLine();
-                        if (line != null) {
-                            var commands = line.Split(" ".ToCharArray());
-                            foreach (var item in commands) {
-                                Console.WriteLine(item);
+                        var json = reader.ReadLine();
+                        if (json != null) {
+                            if (json != "") {
+                                JsonClassRequest jsonRequest = JsonConvert.DeserializeObject<JsonClassRequest>(json);
+                                var responseString = TakeClientRequest(jsonRequest);
+                                Console.WriteLine(responseString);
+                                var writer = new StreamWriter(tcpClient.GetStream(), Encoding.UTF8);
+                                writer.WriteLine(responseString);
+                                break;
                             }
-                            if (line != null)
-                                Console.WriteLine(line);
                             else {//pusta linia = koniec?
                                 var writer = new StreamWriter(tcpClient.GetStream(), Encoding.UTF8);
                                 writer.WriteLine(odebrano);
@@ -92,6 +87,7 @@ namespace Server___konsola {
             }
             Console.WriteLine("OK");
         }
+
 
         static public void BazaInit() {
             // BAZA DANYCH
@@ -123,8 +119,51 @@ namespace Server___konsola {
         /// </summary>
         /// <param name="IpAddres">Adres IP klienta</param>
         /// <param name="data">dane</param>
-        public void TakeClientRequest(string IpAddres, string data) {
+        public static string TakeClientRequest(JsonClassRequest jsonRequest) {
+            requestCode = (RequestsCodes)jsonRequest.RequestCode;
+            switch (requestCode) {
+                case RequestsCodes.REGISTER:
+                    break;
+                case RequestsCodes.HELLO: {
+                        string login = jsonRequest.Parameters[0];
+                        string password = jsonRequest.Parameters[1];
+                        var userLogin = userDatabaseOperations.TryToLoginUser(login, password);
+                        JsonClassResponse<UserLogin> response = new JsonClassResponse<UserLogin> {
+                            RID = jsonRequest.RID,
+                            RequestCode = jsonRequest.RequestCode,
+                            Response = userLogin
+                        };
+                        return JsonConvert.SerializeObject(response);
 
+                    }
+                case RequestsCodes.ADD_FRIEND_TO_LIST:
+                    break;
+                case RequestsCodes.CHANE_USER_DATA:
+                    break;
+                case RequestsCodes.CHANGE_USER_PASSWORD:
+                    break;
+                case RequestsCodes.LOOK_FOR_USER_BY_NAME:
+                    break;
+                case RequestsCodes.LOOK_FOR_USER_BY_LOGIN:
+                    break;
+                case RequestsCodes.LOGOUT:
+                    break;
+                case RequestsCodes.WELCOME:
+                    break;
+                case RequestsCodes.CALL:
+                    break;
+                case RequestsCodes.RINGING:
+                    break;
+                case RequestsCodes.OK:
+                    break;
+                case RequestsCodes.BYE:
+                    break;
+                case RequestsCodes.NO:
+                    break;
+                default:
+                    break;
+            }
+            return "dd";
         }
 
         public static string HashPassword(string ClientHashedPassword) {

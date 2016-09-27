@@ -119,7 +119,6 @@ namespace Server___konsola {
         }
 
         public string HashPassword(string ClientHashedPassword) {
-            //haslo >8 liter sprawdzane po stronie kilenta
             var byteArrayClientPassword = Encoding.UTF8.GetBytes(ClientHashedPassword);
             SHA256 sha = new SHA256Managed();
             sha.Initialize();
