@@ -51,23 +51,26 @@ namespace ProjektTIP
 
         private void bLogin_Click(object sender, RoutedEventArgs e)
         {
-            if(textNick.Text.Equals("user") && passwordBox.Password.Equals("user"))
+            JsonClassRequest request = new JsonClassRequest()
+            {
+                RID = 10133,
+                RequestCode = (int)RequestsCodes.HELLO,
+                Parameters = new List<string>() { textNick.Text, HashPassword(passwordBox.Password) }
+            };
+
+            string json = JsonConvert.SerializeObject(request);
+            var x = ConnectToServer(json);
+
+            if (textNick.Text.Equals("user") && passwordBox.Password.Equals("user"))
             {
                 this.DialogResult = true;
-                this.Close();
-                var user = new SharedClasses.User();
-                user.Login = textNick.Text;
-                user.PasswordHash = HashPassword(passwordBox.Password);
-                JsonClassRequest request = new JsonClassRequest() {
-                    RID = 10133,
-                    RequestCode = (int)RequestsCodes.HELLO,
-                    Parameters = new List<string>() { "smolec", "haslo" }
-                };
-                string json = JsonConvert.SerializeObject(request);
-                MessageBox.Show(json);
+                //this.Close();
+                //var user = new SharedClasses.User();
+                //user.Login = textNick.Text;
+                //user.PasswordHash = HashPassword(passwordBox.Password);
 
 
-                var x = ConnectToServer(json);
+                //MessageBox.Show(json);
 
             }
             else
