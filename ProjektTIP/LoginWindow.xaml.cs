@@ -23,5 +23,22 @@ namespace ProjektTIP
         {
             InitializeComponent();
         }
+
+        private void bLogin_Click(object sender, RoutedEventArgs e)
+        {
+            if(textNick.Text.Equals("user") && passwordBox.Password.Equals("user"))
+            {
+                this.Close();
+            }
+            else
+            {
+                lInfo.Content = "Podano błędne dane";
+            }
+        }
+
+        private void LoginWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            App.Current.Shutdown();
+        }
     }
 }

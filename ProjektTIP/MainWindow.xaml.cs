@@ -69,6 +69,9 @@ namespace ProjektTIP {
             //setFriendStars(3);
 
             user = new Friend("Zabka");
+
+            var loginWindow = new LoginWindow();
+            loginWindow.ShowDialog();
         }
 
 

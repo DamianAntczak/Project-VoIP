@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ProjektTIP"
         mc:Ignorable="d"
-        Title="Logowanie" Height="150" Width="200">
+        Title="Logowanie" Height="160" Width="220"
+        Closing="LoginWindow_Closing">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0.25*" />
@@ -22,8 +23,10 @@
             <RowDefinition Height="0.1*" />
         </Grid.RowDefinitions>
         <Label x:Name="label" Content="Nick" Grid.Column="1" HorizontalAlignment="Left" Margin="43,1,0,0" Grid.Row="1" VerticalAlignment="Top"/>
-        <Label x:Name="label1" Content="Hasło" Grid.Column="1" HorizontalAlignment="Left" Margin="43,0,0,0" Grid.Row="3" VerticalAlignment="Top"/>
+        <Label x:Name="label1" Content="Hasło" Grid.Column="1" HorizontalAlignment="Left" Margin="43,24,0,0" Grid.Row="1" VerticalAlignment="Top" RenderTransformOrigin="0.3,0.5"/>
         <TextBox x:Name="textNick" Grid.Column="3" HorizontalAlignment="Left" Height="23" Grid.Row="1" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="81"/>
-        <PasswordBox x:Name="passwordBox" Grid.Column="3" HorizontalAlignment="Left" Margin="0,1,0,0" Grid.Row="3" VerticalAlignment="Top" Width="81" Height="25"/>
+        <PasswordBox x:Name="passwordBox" Grid.Column="3" HorizontalAlignment="Left" Margin="0,28,0,0" Grid.Row="1" VerticalAlignment="Top" Width="81" Height="22"/>
+        <Button x:Name="bLogin" Content="Zaloguj" Grid.Column="3" HorizontalAlignment="Left" Margin="0,30,0,0" Grid.Row="3" VerticalAlignment="Top" Width="75" Click="bLogin_Click"/>
+        <Label x:Name="lInfo" Content="" Grid.Column="3" HorizontalAlignment="Left" Grid.Row="3" VerticalAlignment="Top" Width="71"/>
     </Grid>
 </Window>
