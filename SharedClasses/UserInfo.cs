@@ -10,13 +10,15 @@ namespace SharedClasses {
         public string SecondName { get; set; }
         public string Login { get; set; }
         public string Description { get; set; }
+        public string ActualIP { get; set; }
 
         public static UserInfo Convert(User user) {
             return new UserInfo {
                 Name = user.Name,
                 SecondName = user.SecondName,
                 Login = user.Login,
-                Description = user.Description
+                Description = user.Description,
+                ActualIP = user.ActualIP
             };
         }
     }

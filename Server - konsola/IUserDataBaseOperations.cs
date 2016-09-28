@@ -32,6 +32,7 @@ namespace Server___konsola {
         string HashPassword(string ClientHashedPassword);
         User FindOneUser(Guid SessionID, int UserID);
         User FindOneUser(string Login);
+        string RingTouser(Guid SessionID, int UserID, int FriendYouWantCallToID);
 
     }
 }

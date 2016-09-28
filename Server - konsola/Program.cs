@@ -84,6 +84,18 @@ namespace Server___konsola {
             Console.WriteLine("OK");
         }
 
+        public static string Ring(string hostname, int port,string request) {
+            using (var tcpClient = new TcpClient()){
+                tcpClient.Connect(hostname, port);
+                var writer = new StreamWriter(tcpClient.GetStream(), Encoding.UTF8);
+                var reader = new StreamReader(tcpClient.GetStream(), Encoding.UTF8);
+                writer.AutoFlush = true;
+                writer.WriteLine(request);
+                var response = reader.ReadLine();
+                return response;
+            }
+        }
+
 
         static public void BazaInit() {
             // BAZA DANYCH
@@ -121,7 +133,9 @@ namespace Server___konsola {
         public static string TakeClientRequest(JsonClassRequest jsonRequest) {
             requestCode = (RequestsCodes)jsonRequest.RequestCode;
             switch (requestCode) {
-                case RequestsCodes.REGISTER:
+                case RequestsCodes.REGISTER: {
+
+                    }
                     break;
                 case RequestsCodes.HELLO: {
                         string login = jsonRequest.Parameters[0];
@@ -129,7 +143,7 @@ namespace Server___konsola {
                         var userLogin = userDatabaseOperations.TryToLoginUser(login, password);
                         JsonClassResponse<UserLogin> response = new JsonClassResponse<UserLogin> {
                             RID = jsonRequest.RID,
-                            RequestCode = jsonRequest.RequestCode,
+                            RequestCode = (int)RequestsCodes.WELCOME,
                             Response = userLogin,
                         };
                         return JsonConvert.SerializeObject(response);
@@ -151,7 +165,22 @@ namespace Server___konsola {
                     break;
                 case RequestsCodes.CALL:
                     break;
-                case RequestsCodes.RINGING:
+                case RequestsCodes.RINGING: {
+                        Guid sessionId = new Guid();
+                        Guid.TryParse(jsonRequest.Parameters[0], out sessionId);
+                        int userId = 0;
+                        int.TryParse(jsonRequest.Parameters[1], out userId);
+                        int friendId = 0;
+                        int.TryParse(jsonRequest.Parameters[2], out friendId);
+                        var friendIP = userDatabaseOperations.RingTouser(sessionId, userId, friendId);
+                        if (friendIP != UserDatabaseOperations.RETURN_NO) {
+                            JsonClassResponse<UserInfo> jsonResponse = new JsonClassResponse<UserInfo> {
+                                RID = jsonRequest.RID,
+                                RequestCode = (int)RequestsCodes.RINGING,
+                                Response = UserInfo.Convert()
+                            }
+                        }
+                    }
                     break;
                 case RequestsCodes.OK:
                     break;

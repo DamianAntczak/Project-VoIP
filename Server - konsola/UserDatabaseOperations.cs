@@ -14,6 +14,9 @@ namespace Server___konsola {
         public static LiteCollection<User> dataBaseCollection;
         public static Guid newGuid;
 
+        public static string RETURN_NO = "NO";
+        public static string RETURN_OK = "OK";
+
         public UserDatabaseOperations(LiteDatabase ldb, LiteCollection<User> lc) {
             dataBase = ldb;
             dataBaseCollection = lc;
@@ -185,11 +188,42 @@ namespace Server___konsola {
             else
                 throw new ArgumentException("Login is null or empty", "Login");
         }
+
+        public User FindOneUser(int UserId) {
+            if (UserId > 0)
+                return dataBaseCollection.FindOne(x => x.Id == UserId);
+            else
+                throw new ArgumentException("UserId isn't correct.", "UserId");
+        }
+
         public UserInfo FindOneUserInfo(int Id) {
-            if (Id>0)
+            if (Id > 0)
                 return UserInfo.Convert(dataBaseCollection.FindOne(x => x.Id == Id));
             else
                 throw new ArgumentException("Login is null or empty", "Login");
+        }
+
+        public string RingTouser(Guid SessionId, int UserId, int FriendYouWantCallToID) {
+            if (UserId != FriendYouWantCallToID) {
+                User user;
+                User friend;
+                try {
+                    user = FindOneUser(SessionId, UserId);
+                    friend = FindOneUser(FriendYouWantCallToID);
+                }
+                catch (ArgumentException e) {
+                    return RETURN_NO;
+                }
+                if (friend.ActualIP != null) {
+                    return friend.ActualIP;
+                }
+                else {
+                    return RETURN_NO;
+                }
+            }
+            else {
+                return RETURN_NO;
+            }
         }
     }
 }
