@@ -67,8 +67,7 @@ namespace ProjektTIP {
             friends.addFriend("Damian");
             friends.addFriend("Wojtas");
 
-            listFriends.ItemsSource = friends;
-            listFriends.DisplayMemberPath = "Nick";
+            
 
             //setFriendStars(3);
 
@@ -85,8 +84,13 @@ namespace ProjektTIP {
             {
                 Application.Current.Shutdown();
             }
+
+            var opis = String.IsNullOrEmpty(myLogin.Description) ? "Brak opisu!" : myLogin.Description;
             lDescription.Content = myLogin.Login + " " + lDescription.Content;
-            tDescription.Text = myLogin.Description;
+            tDescription.Text = opis;
+
+            listFriends.ItemsSource = myLogin.Friends;
+            listFriends.DisplayMemberPath = "Login";
         }
 
 
@@ -274,17 +278,17 @@ namespace ProjektTIP {
 
 
         private void listFriends_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e) {
-            var selectedItem = (Friend)listFriends.SelectedItem;
+            var selectedItem = (UserInfo)listFriends.SelectedItem;
 
             if (!String.IsNullOrEmpty(selectedItem.Name)) {
-                freindLabel.Content = selectedItem.Name + ' ' + selectedItem.Last_name;
+                freindLabel.Content = selectedItem.Name + ' ' + selectedItem.SecondName;
             }
             else {
-                freindLabel.Content = selectedItem.Nick;
+                freindLabel.Content = selectedItem.Login;
                 freindImg.Source = new BitmapImage(new Uri(@"\avatar-man.png",UriKind.Relative));
             }
 
-            setFriendStars(selectedItem.Opinion);
+            setFriendStars(0);
 
         }
 

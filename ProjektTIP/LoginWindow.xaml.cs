@@ -27,11 +27,14 @@ namespace ProjektTIP
     {
         private UserLogin myLogin;
 
+        private Random rand;
+
         public LoginWindow()
         {
             InitializeComponent();
 
             this.myLogin = new UserLogin();
+            rand = new Random();
         }
 
         public string HashPassword(string ClientHashedPassword)
@@ -56,7 +59,7 @@ namespace ProjektTIP
         {
             JsonClassRequest request = new JsonClassRequest()
             {
-                RID = 10133,
+                RID = rand.Next(1000,3000),
                 RequestCode = (int)RequestsCodes.HELLO,
                 Parameters = new List<string>() { textNick.Text, HashPassword(passwordBox.Password) }
             };
