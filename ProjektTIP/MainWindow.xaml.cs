@@ -56,17 +56,6 @@ namespace ProjektTIP {
             sending_end_point = new IPEndPoint(send_to_address, 11000);
 
             connected = false;
-
-
-            friends = new Friends();
-            var friend = new Friend("Buggi");
-            friend.setName("Jakub", "Bugaj");
-            friend.setAvatar("Azx");
-            friend.Opinion = 5;
-            friends.addFriend(friend);
-            friends.addFriend("Damian");
-            friends.addFriend("Wojtas");
-
             
 
             //setFriendStars(3);
@@ -147,35 +136,44 @@ namespace ProjektTIP {
 
             if (!connected)
             {
+                var selectedFriend = (UserInfo)listFriends.SelectedItem;
 
-                JsonClassRequest request = new JsonClassRequest()
+                if (selectedFriend != null)
                 {
-                    RID = rnd.Next(1000,5000),
-                    RequestCode = (int)RequestsCodes.CALL,
-                    Parameters = new List<string>() {myLogin.Id.ToString()}
-                };
 
-                string json = JsonConvert.SerializeObject(request);
-                var x = await ConnectToServer(json);
-                var response = JsonConvert.DeserializeObject<UserInfo>(x);
+                    JsonClassRequest request = new JsonClassRequest()
+                    {
+                        RID = rnd.Next(1000, 5000),
+                        RequestCode = (int)RequestsCodes.CALL,
+                        Parameters = new List<string>() { myLogin.Id.ToString(), selectedFriend.Id.ToString() }
+                    };
 
-
-                sending_socket_audio = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-                sending_end_point = new IPEndPoint(send_to_address, 11122);
-
-                waveSource = new WaveIn();
-                waveSource.WaveFormat = new WaveFormat(48000,1);
-
-                waveSource.DataAvailable += new EventHandler<WaveInEventArgs>(waveSource_DataAvailable);
-                waveSource.RecordingStopped += new EventHandler<StoppedEventArgs>(waveSource_RecordingStopped);
+                    string json = JsonConvert.SerializeObject(request);
+                    var x = await ConnectToServer(json);
+                    var response = JsonConvert.DeserializeObject<UserInfo>(x);
 
 
-               waveSource.StartRecording();
+                    sending_socket_audio = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+                    sending_end_point = new IPEndPoint(send_to_address, 11122);
+
+                    waveSource = new WaveIn();
+                    waveSource.WaveFormat = new WaveFormat(48000, 1);
+
+                    waveSource.DataAvailable += new EventHandler<WaveInEventArgs>(waveSource_DataAvailable);
+                    waveSource.RecordingStopped += new EventHandler<StoppedEventArgs>(waveSource_RecordingStopped);
 
 
-                connected = true;
+                    waveSource.StartRecording();
 
-                bConnection.Content = "Rozłącz";
+
+                    connected = true;
+
+                    bConnection.Content = "Rozłącz";
+                }
+                else
+                {
+                    MessageBox.Show("Nie wybrano użytkownika");
+                }
             }
             else
             {
@@ -183,6 +181,7 @@ namespace ProjektTIP {
                 connected = false;
                 bConnection.Content = "Połącz";
             }
+
         }
 
         private void recive_UDP() {
@@ -296,9 +295,9 @@ namespace ProjektTIP {
         {
             if(listFriends.SelectedItem != null)
             {
-                var friend = (Friend)listFriends.SelectedItem;
-                friend.Opinion = 1;
-                setFriendStars(friend.Opinion);
+                //var friend = (Friend)listFriends.SelectedItem;
+                //friend.Opinion = 1;
+                //setFriendStars(friend.Opinion);
             }
         }
 
@@ -306,9 +305,9 @@ namespace ProjektTIP {
         {
             if (listFriends.SelectedItem != null)
             {
-                var friend = (Friend)listFriends.SelectedItem;
-                friend.Opinion = 2;
-                setFriendStars(friend.Opinion);
+                //var friend = (Friend)listFriends.SelectedItem;
+                //friend.Opinion = 2;
+                //setFriendStars(friend.Opinion);
             }
 
         }
@@ -317,9 +316,9 @@ namespace ProjektTIP {
         {
             if (listFriends.SelectedItem != null)
             {
-                var friend = (Friend)listFriends.SelectedItem;
-                friend.Opinion = 3;
-                setFriendStars(friend.Opinion);
+                //var friend = (Friend)listFriends.SelectedItem;
+                //friend.Opinion = 3;
+                //setFriendStars(friend.Opinion);
             }
         }
 
@@ -327,9 +326,9 @@ namespace ProjektTIP {
         {
             if (listFriends.SelectedItem != null)
             {
-                var friend = (Friend)listFriends.SelectedItem;
-                friend.Opinion = 4;
-                setFriendStars(friend.Opinion);
+                //var friend = (Friend)listFriends.SelectedItem;
+                //friend.Opinion = 4;
+                //setFriendStars(friend.Opinion);
             }
         }
 
@@ -337,9 +336,9 @@ namespace ProjektTIP {
         {
             if (listFriends.SelectedItem != null)
             {
-                var friend = (Friend)listFriends.SelectedItem;
-                friend.Opinion = 5;
-                setFriendStars(friend.Opinion);
+                //var friend = (Friend)listFriends.SelectedItem;
+                //friend.Opinion = 5;
+                //setFriendStars(friend.Opinion);
             }
         }
 
@@ -347,15 +346,14 @@ namespace ProjektTIP {
         {
             if (listFriends.SelectedItem != null)
             {
-                var friend = (Friend)listFriends.SelectedItem;
-                friend.Opinion = 6;
-                setFriendStars(friend.Opinion);
+                //var friend = (Friend)listFriends.SelectedItem;
+                //friend.Opinion = 6;
+                //setFriendStars(friend.Opinion);
             }
         }
 
         private void bSettings_Click(object sender, RoutedEventArgs e)
         {
-            user.Name = "Jan";
             var settingWindow = new SettingWindow(ref myLogin);
             settingWindow.ShowDialog();
         }
