@@ -70,7 +70,7 @@ namespace Server___konsola {
                 user.Friends.Add(friend.Id);
                 if (friend.Friends == null)
                     friend.Friends = new List<int>();
-                friend.Friends.Add(friend.Id);
+                friend.Friends.Add(user.Id);
                 user.Friends.Sort();
                 friend.Friends.Sort();
                 dataBaseCollection.Update(user);
@@ -129,6 +129,7 @@ namespace Server___konsola {
                             Id = user.Id,
                             SessionID = sessionId,
                             Friends = GetFriendsInfo(user.Friends)
+                            
                         };
                     }
                     else
@@ -144,6 +145,44 @@ namespace Server___konsola {
                 return new UserLogin();
             }
         }
+
+        public UserLogin TryToLoginUser(string Login, string Password,string IPAddress) {
+            try {
+                var user = FindOneUser(Login);
+                if (user != null) {
+                    var userHashedPassword = user.PasswordHash;
+                    var passwordHashToCompare = HashPassword(Password);
+
+                    if (userHashedPassword == passwordHashToCompare) {
+                        Guid sessionId = Guid.NewGuid();
+                        user.SessionID = sessionId;
+                        user.ActualIP = IPAddress;
+                        dataBaseCollection.Update(user);
+
+                        return new UserLogin {
+                            Name = user.Name,
+                            SecondName = user.SecondName,
+                            Description = user.Description,
+                            Login = user.Login,
+                            Id = user.Id,
+                            SessionID = sessionId,
+                            Friends = GetFriendsInfo(user.Friends),
+                        };
+                    }
+                    else
+                        return new UserLogin();
+                }
+                else {
+                    return new UserLogin();
+                }
+            }
+            catch (ArgumentException e) {
+                Console.WriteLine(e.StackTrace);
+                Console.WriteLine(e.Message);
+                return new UserLogin();
+            }
+        }
+
 
         private List<UserInfo> GetFriendsInfo(List<int> friendsIds) {
             List<UserInfo> userFriends = new List<UserInfo>();
@@ -221,7 +260,7 @@ namespace Server___konsola {
                 throw new ArgumentException("Login is null or empty", "Login");
         }
 
-        public string RingTouser(Guid SessionId, int UserId, int FriendYouWantCallToID) {
+        public UserInfo CallToUser(Guid SessionId, int UserId, int FriendYouWantCallToID) {
             if (UserId != FriendYouWantCallToID) {
                 User user;
                 User friend;
@@ -230,17 +269,18 @@ namespace Server___konsola {
                     friend = FindOneUser(FriendYouWantCallToID);
                 }
                 catch (ArgumentException e) {
-                    return RETURN_NO;
+                    Console.WriteLine(e.Message);
+                    return null;
                 }
-                if (friend.ActualIP != null) {
-                    return friend.ActualIP;
+                if (user != null && friend != null && friend.ActualIP != null) {
+                    return UserInfo.Convert(friend);
                 }
                 else {
-                    return RETURN_NO;
+                    return null;
                 }
             }
             else {
-                return RETURN_NO;
+                return null;
             }
         }
     }

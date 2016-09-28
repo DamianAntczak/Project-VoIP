@@ -28,11 +28,12 @@ namespace Server___konsola {
         void ChangeUserData(Guid SessionID, int UserID, string Name, string SecondName, string Description);
         void ChangeUserPassword(Guid SessionID, int UserID, string OldPasswordHash, string NewPasswordHash);
         UserLogin TryToLoginUser(string Login, string Password);
+        UserLogin TryToLoginUser(string Login, string Password, string IPAddress);
         void LogoutUser(Guid SessionID, int UserID);
         string HashPassword(string ClientHashedPassword);
         User FindOneUser(Guid SessionID, int UserID);
         User FindOneUser(string Login);
-        string RingTouser(Guid SessionID, int UserID, int FriendYouWantCallToID);
+        UserInfo CallToUser(Guid SessionID, int UserID, int FriendYouWantCallToID);
 
     }
 }

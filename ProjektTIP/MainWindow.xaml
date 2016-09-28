@@ -8,12 +8,12 @@
         Title="FurBall" Height="350" Width="525">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="0.25*" />
-            <ColumnDefinition Width="0.75*" />
-            <ColumnDefinition Width="0.75*" />
-            <ColumnDefinition Width="0.25*" />
-            <ColumnDefinition Width="1*" />
-            <ColumnDefinition Width="0.25*" />
+            <ColumnDefinition Width="40" />
+            <ColumnDefinition Width="119*" />
+            <ColumnDefinition Width="120*" />
+            <ColumnDefinition Width="40*" />
+            <ColumnDefinition Width="159*" />
+            <ColumnDefinition Width="39*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="0.5*" />
