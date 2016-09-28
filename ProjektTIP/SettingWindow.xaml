@@ -28,9 +28,9 @@
         <Label x:Name="label" Content="Nick:" Grid.Column="1" HorizontalAlignment="Left" Grid.Row="1" VerticalAlignment="Top"/>
         <Label x:Name="label1" Content="Imię:" Grid.Column="1" HorizontalAlignment="Left" Grid.Row="3" VerticalAlignment="Top"/>
         <Label x:Name="label2" Content="Nazwisko:" Grid.Column="1" HorizontalAlignment="Left" Grid.Row="5" VerticalAlignment="Top"/>
-        <TextBox x:Name="textBox" Grid.Column="3" Height="23" Grid.Row="1" TextWrapping="Wrap" Text="{Binding Nick}" VerticalAlignment="Top"/>
+        <TextBox x:Name="textBox" Grid.Column="3" Height="23" Grid.Row="1" TextWrapping="Wrap" Text="{Binding Login}" VerticalAlignment="Top"/>
         <TextBox x:Name="textBox1" Grid.Column="3" Height="23" Grid.Row="3" TextWrapping="Wrap" Text="{Binding Name}" VerticalAlignment="Top"/>
-        <TextBox x:Name="textBox2" Grid.Column="3" Height="23" Grid.Row="5" TextWrapping="Wrap" Text="{Binding Last_name}" VerticalAlignment="Top"/>
+        <TextBox x:Name="textBox2" Grid.Column="3" Height="23" Grid.Row="5" TextWrapping="Wrap" Text="{Binding SecondName}" VerticalAlignment="Top"/>
         <Button x:Name="bSave" Content="Zapisz" Grid.Column="3" HorizontalAlignment="Left" Margin="81,25,0,0" Grid.Row="7" VerticalAlignment="Top" Width="75" Click="bSave_Click"/>
     </Grid>
 </Window>

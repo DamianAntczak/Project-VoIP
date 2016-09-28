@@ -58,13 +58,22 @@ namespace ProjektTIP
                 {
                     RID = 10133,
                     RequestCode = (int)RequestsCodes.REGISTER,
-                    Parameters = new List<string>() { newUser.Name, newUser.SecondName, newUser.Login, newUser.PasswordHash }
+                    Parameters = new List<string>() { newUser.Login, newUser.Name, newUser.SecondName, newUser.PasswordHash }
                 };
 
                 string json = JsonConvert.SerializeObject(request);
                 var x = await ConnectToServer(json);
-                var register = JsonConvert.DeserializeObject<JsonClassResponse<UserLogin>>(x);
-                UserLogin userLogin = register.Response;
+                var register = JsonConvert.DeserializeObject<JsonClassResponse<string>>(x);
+                MessageBox.Show(register.Response);
+
+                if (register.Response.Equals("OK"))
+                {
+                    this.Close();
+                }
+                else
+                {
+                    MessageBox.Show("Podany login jest już wykorzystywany");
+                }
 
             }
             else

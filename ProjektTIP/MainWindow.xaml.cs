@@ -147,7 +147,7 @@ namespace ProjektTIP {
                 {
                     RID = rnd.Next(1000,5000),
                     RequestCode = (int)RequestsCodes.CALL,
-                    Parameters = new List<string>() {myLogin.Id.ToString(),"21" }
+                    Parameters = new List<string>() {myLogin.Id.ToString()}
                 };
 
                 string json = JsonConvert.SerializeObject(request);
@@ -351,7 +351,7 @@ namespace ProjektTIP {
         private void bSettings_Click(object sender, RoutedEventArgs e)
         {
             user.Name = "Jan";
-            var settingWindow = new SettingWindow(ref user);
+            var settingWindow = new SettingWindow(ref myLogin);
             settingWindow.ShowDialog();
         }
 
@@ -360,13 +360,22 @@ namespace ProjektTIP {
         {
             using (var tcpClient = new TcpClient())
             {
-                await tcpClient.ConnectAsync(Settings.ServerAddress, Settings.ServerPort);
-                var writer = new StreamWriter(tcpClient.GetStream(), Encoding.UTF8);
-                writer.AutoFlush = true;
-                var reader = new StreamReader(tcpClient.GetStream(), Encoding.UTF8);
-                await writer.WriteLineAsync(json);
-                var responseString = await reader.ReadLineAsync();
-                return responseString;
+                try
+                {
+
+                    await tcpClient.ConnectAsync(Settings.ServerAddress, Settings.ServerPort);
+                    var writer = new StreamWriter(tcpClient.GetStream(), Encoding.UTF8);
+                    writer.AutoFlush = true;
+                    var reader = new StreamReader(tcpClient.GetStream(), Encoding.UTF8);
+                    await writer.WriteLineAsync(json);
+                    var responseString = await reader.ReadLineAsync();
+                    return responseString;
+
+                }
+                catch (SocketException e)
+                {
+                    return "error";
+                }
             }
         }
     }

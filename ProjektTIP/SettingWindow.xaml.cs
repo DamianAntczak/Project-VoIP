@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SharedClasses;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,9 +20,9 @@ namespace ProjektTIP
     /// </summary>
     public partial class SettingWindow : Window
     {
-        private Friend user;
+        private UserLogin user;
 
-        public SettingWindow(ref Friend user)
+        public SettingWindow(ref UserLogin user)
         {
             InitializeComponent();
             this.user = user;

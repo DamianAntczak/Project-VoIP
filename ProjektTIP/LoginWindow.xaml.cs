@@ -63,33 +63,46 @@ namespace ProjektTIP
 
             string json = JsonConvert.SerializeObject(request);
             var x = await ConnectToServer(json);
-            var login = JsonConvert.DeserializeObject<JsonClassResponse<UserLogin>>(x);
-            UserLogin userLogin = login.Response;
-            myLogin = userLogin;
-            //MessageBox.Show(userLogin.Id.ToString());
-
-            if (!userLogin.SessionID.Equals(new Guid()))
+            if (x.Equals("error"))
             {
-                this.DialogResult = true;
-
+                MessageBox.Show("Brak połączenia z serwerem");
             }
             else
             {
-                lInfo.Content = "Podano błędne dane";
+                var login = JsonConvert.DeserializeObject<JsonClassResponse<UserLogin>>(x);
+                UserLogin userLogin = login.Response;
+                myLogin = userLogin;
+                //MessageBox.Show(userLogin.Id.ToString());
+
+                if (!userLogin.SessionID.Equals(new Guid()))
+                {
+                    this.DialogResult = true;
+
+                }
+                else
+                {
+                    lInfo.Content = "Podano błędne dane";
+                }
             }
         }
 
         async Task<string> ConnectToServer(string json)
         {
-            using (var tcpClient = new TcpClient())
+            try { 
+                using (var tcpClient = new TcpClient())
+                {
+                    await tcpClient.ConnectAsync(Settings.ServerAddress, Settings.ServerPort);
+                    var writer = new StreamWriter(tcpClient.GetStream(), Encoding.UTF8);
+                    writer.AutoFlush = true;
+                    var reader = new StreamReader(tcpClient.GetStream(), Encoding.UTF8);
+                    await writer.WriteLineAsync(json);
+                    var responseString = await reader.ReadLineAsync();
+                    return responseString;
+                }
+            }
+            catch (SocketException e)
             {
-                await tcpClient.ConnectAsync(Settings.ServerAddress, Settings.ServerPort);
-                var writer = new StreamWriter(tcpClient.GetStream(), Encoding.UTF8);
-                writer.AutoFlush = true;
-                var reader = new StreamReader(tcpClient.GetStream(), Encoding.UTF8);
-                await writer.WriteLineAsync(json);
-                var responseString = await reader.ReadLineAsync();
-                return responseString;
+                return "error";
             }
         }
 
