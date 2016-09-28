@@ -46,6 +46,8 @@
             <Image x:Name="imgStar6" />
         </Button>
         <Button x:Name="bSettings" Content="Ustawienia" Grid.Column="5" HorizontalAlignment="Left" Margin="0,26,0,0" VerticalAlignment="Top" Width="29" Click="bSettings_Click"/>
+        <Label x:Name="lDescription" Content="twój opis:" Grid.Column="1" Margin="0,4,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.316,-0.85" HorizontalAlignment="Right"/>
+        <TextBlock x:Name="tDescription" Grid.Column="2" HorizontalAlignment="Left" Margin="0,9,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="119" Height="27" />
 
     </Grid>
 </Window>

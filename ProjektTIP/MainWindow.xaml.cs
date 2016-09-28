@@ -85,7 +85,8 @@ namespace ProjektTIP {
             {
                 Application.Current.Shutdown();
             }
-            MessageBox.Show(myLogin.Id.ToString());
+            lDescription.Content = myLogin.Login + " " + lDescription.Content;
+            tDescription.Text = myLogin.Description;
         }
 
 
