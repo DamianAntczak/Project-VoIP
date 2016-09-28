@@ -64,6 +64,7 @@ namespace Server___konsola {
             using (var tcpClient = tcpListener.AcceptTcpClient()) {
                 if (tcpClient.Connected) {
                     while (true) {
+                        var stream = tcpClient.GetStream();
                         var reader = new StreamReader(tcpClient.GetStream(), Encoding.UTF8);
                         var writer = new StreamWriter(tcpClient.GetStream(), Encoding.UTF8);
                         writer.AutoFlush = true;
@@ -135,9 +136,24 @@ namespace Server___konsola {
             requestCode = (RequestsCodes)jsonRequest.RequestCode;
             switch (requestCode) {
                 case RequestsCodes.REGISTER: {
-
+                        string login = jsonRequest.Parameters[0];
+                        string firstName = jsonRequest.Parameters[1];
+                        string secondName = jsonRequest.Parameters[2];
+                        string hashPassword = jsonRequest.Parameters[3];
+                        if (userDatabaseOperations.TryRegisterNewUser(firstName, secondName, login, hashPassword, ""))
+                            return JsonConvert.SerializeObject(new JsonClassResponse<string> {
+                                RID = jsonRequest.RID,
+                                RequestCode = (int)RequestsCodes.OK,
+                                Response = UserDatabaseOperations.RETURN_OK
+                            });
+                        else {
+                            return JsonConvert.SerializeObject(new JsonClassResponse<string> {
+                                RID = jsonRequest.RID,
+                                RequestCode = (int)RequestsCodes.NO,
+                                Response = UserDatabaseOperations.RETURN_NO
+                            });
+                        }
                     }
-                    break;
                 case RequestsCodes.HELLO: {
                         string login = jsonRequest.Parameters[0];
                         string password = jsonRequest.Parameters[1];
@@ -164,16 +180,17 @@ namespace Server___konsola {
                     break;
                 case RequestsCodes.WELCOME:
                     break;
-                case RequestsCodes.CALL:
-                    break;
-                case RequestsCodes.RINGING: {
+                case RequestsCodes.CALL: {
+
                         Guid sessionId = new Guid();
                         Guid.TryParse(jsonRequest.Parameters[0], out sessionId);
                         int userId = 0;
                         int.TryParse(jsonRequest.Parameters[1], out userId);
                         int friendId = 0;
                         int.TryParse(jsonRequest.Parameters[2], out friendId);
+
                         var friendIP = userDatabaseOperations.RingTouser(sessionId, userId, friendId);
+
                         if (friendIP != UserDatabaseOperations.RETURN_NO) {
                             var user = userDatabaseOperations.FindOneUser(sessionId, userId);
                             JsonClassResponse<UserInfo> jsonResponse = new JsonClassResponse<UserInfo> {
@@ -181,8 +198,10 @@ namespace Server___konsola {
                                 RequestCode = (int)RequestsCodes.RINGING,
                                 Response = UserInfo.Convert(user)
                             };
+
                             var friendResponse = Ring(friendIP, ClientPort, JsonConvert.SerializeObject(jsonResponse));
                             return friendResponse;
+
                             //JsonClassResponse<UserInfo> jsonFriendResponse = JsonConvert.DeserializeObject<JsonClassResponse<UserInfo>>(friendResponse);
                             //if(jsonFriendResponse.RequestCode == (int)RequestsCodes.OK) {
                             //    return friendResponse;
@@ -197,8 +216,10 @@ namespace Server___konsola {
                                 RequestCode = (int)RequestsCodes.RINGING,
                                 Response = null
                             };
+                            return JsonConvert.SerializeObject(jsonNOResponse);
                         }
                     }
+                case RequestsCodes.RINGING: 
                     break;
                 case RequestsCodes.OK:
                     break;

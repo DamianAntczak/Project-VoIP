@@ -42,7 +42,7 @@ namespace Server___konsola {
             Console.WriteLine("Próba zapisania nowego użytkownika do bazy");
             if (dataBase == null)
                 throw new ArgumentNullException();
-            var user = new User { Name = Name, SecondName = SecondName, Login = Login, PasswordHash = PasswordHash, Description = Description };
+            var user = new User { Name = Name, SecondName = SecondName, Login = Login, PasswordHash = HashPassword(PasswordHash), Description = Description };
             try {
                 dataBaseCollection.Insert(user);
                 return true;
