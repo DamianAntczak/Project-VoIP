@@ -29,7 +29,7 @@ namespace Server___konsola {
                 return new UserInfo { Login = ui.Login, Name = ui.Name, SecondName = ui.SecondName, Description = ui.Description };
             else
                 return null;
-            
+
         }
 
         public List<UserInfo> LookForUser(string Name, string SecondName) {
@@ -64,7 +64,7 @@ namespace Server___konsola {
         public bool AddNewFriend(Guid SessionID, int UserID, string Login2) {
             var user = FindOneUser(SessionID, UserID);
             var friend = FindOneUser(Login2);
-            if(user != null && friend != null) {
+            if (user != null && friend != null) {
                 if (user.Friends == null)
                     user.Friends = new List<int>();
                 user.Friends.Add(friend.Id);
@@ -149,7 +149,9 @@ namespace Server___konsola {
             List<UserInfo> userFriends = new List<UserInfo>();
             if (friendsIds != null) {
                 foreach (var friend in friendsIds) {
-                    userFriends.Add(FindOneUserInfo(friend));
+                    var f = FindOneUserInfo(friend);
+                    if (f != null)
+                        userFriends.Add(FindOneUserInfo(friend));
                 }
             }
             return userFriends;
