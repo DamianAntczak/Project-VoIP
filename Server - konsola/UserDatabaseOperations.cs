@@ -25,8 +25,11 @@ namespace Server___konsola {
 
         public UserInfo LookForUser(string Login) {
             var ui = FindOneUser(Login);
-            UserInfo userInfo = new UserInfo { Login = ui.Login, Name = ui.Name, SecondName = ui.SecondName, Description = ui.Description };
-            return userInfo;
+            if (ui != null)
+                return new UserInfo { Login = ui.Login, Name = ui.Name, SecondName = ui.SecondName, Description = ui.Description };
+            else
+                return null;
+            
         }
 
         public List<UserInfo> LookForUser(string Name, string SecondName) {
@@ -58,15 +61,23 @@ namespace Server___konsola {
         /// </summary>
         /// <param name="Login1"></param>
         /// <param name="Login2"></param>
-        public void AddNewFriend(Guid SessionID, int UserID, string Login2) {
+        public bool AddNewFriend(Guid SessionID, int UserID, string Login2) {
             var user = FindOneUser(SessionID, UserID);
             var friend = FindOneUser(Login2);
-            if (user.Friends.IndexOf(friend.Id) > 0) {
+            if(user != null && friend != null) {
+                if (user.Friends == null)
+                    user.Friends = new List<int>();
                 user.Friends.Add(friend.Id);
+                if (friend.Friends == null)
+                    friend.Friends = new List<int>();
                 friend.Friends.Add(friend.Id);
                 user.Friends.Sort();
                 friend.Friends.Sort();
+                dataBaseCollection.Update(user);
+                dataBaseCollection.Update(friend);
+                return true;
             }
+            return false;
         }
 
 
@@ -103,24 +114,29 @@ namespace Server___konsola {
         public UserLogin TryToLoginUser(string Login, string Password) {
             try {
                 var user = FindOneUser(Login);
-                var userHashedPassword = user.PasswordHash;
-                var passwordHashToCompare = HashPassword(Password);
-                if (userHashedPassword == passwordHashToCompare) {
-                    Guid sessionId = Guid.NewGuid();
-                    user.SessionID = sessionId;
-                    dataBaseCollection.Update(user);
-                    return new UserLogin {
-                        Name = user.Name,
-                        SecondName = user.SecondName,
-                        Description = user.Description,
-                        Login = user.Login,
-                        Id = user.Id,
-                        SessionID = sessionId,
-                        Friends = GetFriendsInfo(user.Friends)
-                    };
+                if (user != null) {
+                    var userHashedPassword = user.PasswordHash;
+                    var passwordHashToCompare = HashPassword(Password);
+                    if (userHashedPassword == passwordHashToCompare) {
+                        Guid sessionId = Guid.NewGuid();
+                        user.SessionID = sessionId;
+                        dataBaseCollection.Update(user);
+                        return new UserLogin {
+                            Name = user.Name,
+                            SecondName = user.SecondName,
+                            Description = user.Description,
+                            Login = user.Login,
+                            Id = user.Id,
+                            SessionID = sessionId,
+                            Friends = GetFriendsInfo(user.Friends)
+                        };
+                    }
+                    else
+                        return new UserLogin();
                 }
-                else
+                else {
                     return new UserLogin();
+                }
             }
             catch (ArgumentException e) {
                 Console.WriteLine(e.StackTrace);

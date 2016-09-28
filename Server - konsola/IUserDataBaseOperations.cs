@@ -24,7 +24,7 @@ namespace Server___konsola {
         /// <returns></returns>
         UserInfo LookForUser(string Login);
         bool TryRegisterNewUser(string Name, string SecondName, string Login, string PasswordHash, string Description);
-        void AddNewFriend(Guid SessionID, int UserID, string Login2);
+        bool AddNewFriend(Guid SessionID, int UserID, string Login2);
         void ChangeUserData(Guid SessionID, int UserID, string Name, string SecondName, string Description);
         void ChangeUserPassword(Guid SessionID, int UserID, string OldPasswordHash, string NewPasswordHash);
         UserLogin TryToLoginUser(string Login, string Password);

@@ -46,10 +46,6 @@ namespace Server___konsola {
 
             while (true) {
                 Listener();
-                var user = dataBaseCollection.FindOne(x => x.Login == "2l");
-                string json = JsonConvert.SerializeObject(UserLogin.Convert(user));
-
-                Console.WriteLine(json);
                 if (theEnd == true)
                     break;
             }
@@ -166,7 +162,9 @@ namespace Server___konsola {
                         return JsonConvert.SerializeObject(response);
 
                     }
-                case RequestsCodes.ADD_FRIEND_TO_LIST:
+                case RequestsCodes.ADD_FRIEND_TO_LIST: {
+                        
+                    }
                     break;
                 case RequestsCodes.CHANE_USER_DATA:
                     break;
@@ -174,9 +172,31 @@ namespace Server___konsola {
                     break;
                 case RequestsCodes.LOOK_FOR_USER_BY_NAME:
                     break;
-                case RequestsCodes.LOOK_FOR_USER_BY_LOGIN:
+                case RequestsCodes.LOOK_FOR_USER_BY_LOGIN: {
+                        string login = jsonRequest.Parameters[0];
+                        var user = userDatabaseOperations.LookForUser(login);
+                        int responseCode = 0;
+                        if (user != null)
+                            responseCode = (int)RequestsCodes.OK;
+                        else
+                            responseCode = (int)RequestsCodes.NO;
+
+                        JsonClassResponse<UserInfo> response = new JsonClassResponse<UserInfo> {
+                            RID = jsonRequest.RID,
+                            RequestCode = responseCode,
+                            Response = user,
+                        };
+                    }
                     break;
-                case RequestsCodes.LOGOUT:
+                case RequestsCodes.LOGOUT: {
+                        Guid sessionId = new Guid();
+                        Guid.TryParse(jsonRequest.Parameters[0], out sessionId);
+                        int userId = 0;
+                        int.TryParse(jsonRequest.Parameters[1], out userId);
+                        int friendId = 0;
+                        int.TryParse(jsonRequest.Parameters[2], out friendId);
+                        userDatabaseOperations.LogoutUser(sessionId, userId);
+                    }
                     break;
                 case RequestsCodes.WELCOME:
                     break;
@@ -198,7 +218,6 @@ namespace Server___konsola {
                                 RequestCode = (int)RequestsCodes.RINGING,
                                 Response = UserInfo.Convert(user)
                             };
-
                             var friendResponse = Ring(friendIP, ClientPort, JsonConvert.SerializeObject(jsonResponse));
                             return friendResponse;
 
