@@ -19,6 +19,7 @@ namespace Server___konsola {
         static bool theEnd;
 
         private const int listenPort = 11001;
+        private const int ClientPort = 11002;
         static ClientPool clientPool;
         static TcpListener tcpListener;
         static string dbName = "UserDB.db";
@@ -40,7 +41,7 @@ namespace Server___konsola {
 
 
             //BazaInit();
-                userDatabaseOperations = new UserDatabaseOperations(dataBase, dataBaseCollection);
+            userDatabaseOperations = new UserDatabaseOperations(dataBase, dataBaseCollection);
             tcpListener.Start();
 
             while (true) {
@@ -68,7 +69,7 @@ namespace Server___konsola {
                         writer.AutoFlush = true;
                         string json = "";
 
-                        
+
                         if (reader != null && (json = reader.ReadLine()) != null) {
                             JsonClassRequest jsonRequest = JsonConvert.DeserializeObject<JsonClassRequest>(json);
                             var responseString = TakeClientRequest(jsonRequest);
@@ -84,6 +85,18 @@ namespace Server___konsola {
             Console.WriteLine("OK");
         }
 
+        public static string Ring(string hostname, int port, string request) {
+            using (var tcpClient = new TcpClient()) {
+                tcpClient.Connect(hostname, port);
+                var writer = new StreamWriter(tcpClient.GetStream(), Encoding.UTF8);
+                var reader = new StreamReader(tcpClient.GetStream(), Encoding.UTF8);
+                writer.AutoFlush = true;
+                writer.WriteLine(request);
+                var response = reader.ReadLine();
+                return response;
+            }
+        }
+
 
         static public void BazaInit() {
             // BAZA DANYCH
@@ -93,7 +106,7 @@ namespace Server___konsola {
             userList.Add(new User { Name = "2N", SecondName = "2SN", Login = "2l", PasswordHash = HashPassword("PASS"), Description = "OPISSSSSSSSSS", Friends = new List<int>() { 1 }, ActualIP = string.Empty, SessionID = new Guid() });
             userList.Add(new User { Name = "3N", SecondName = "3SN", Login = "3L", PasswordHash = HashPassword("PASS"), Description = "COS", ActualIP = string.Empty, SessionID = new Guid() });
             userList.Add(new User { Name = "3N", SecondName = "3SN", Login = "4L", PasswordHash = HashPassword("PASS"), Description = "COS", ActualIP = string.Empty, SessionID = new Guid() });
-            userList.Add(new User { Name = "Damian", SecondName = "Damian", Login = "Damian",PasswordHash = "955992b0608a67000c4825ac7ca7f047bdccb70a69024061374499fed58fb534", Description = "COS", ActualIP = string.Empty, SessionID = new Guid() });
+            userList.Add(new User { Name = "Damian", SecondName = "Damian", Login = "Damian", PasswordHash = "955992b0608a67000c4825ac7ca7f047bdccb70a69024061374499fed58fb534", Description = "COS", ActualIP = string.Empty, SessionID = new Guid() });
             userList.Add(new User { Name = "Szymon", SecondName = "Szymon", Login = "Szymon", PasswordHash = "955992b0608a67000c4825ac7ca7f047bdccb70a69024061374499fed58fb534", Description = "COS", ActualIP = string.Empty, SessionID = new Guid() });
 
             using (var db = new LiteDatabase(dbName)) {
@@ -121,7 +134,9 @@ namespace Server___konsola {
         public static string TakeClientRequest(JsonClassRequest jsonRequest) {
             requestCode = (RequestsCodes)jsonRequest.RequestCode;
             switch (requestCode) {
-                case RequestsCodes.REGISTER:
+                case RequestsCodes.REGISTER: {
+
+                    }
                     break;
                 case RequestsCodes.HELLO: {
                         string login = jsonRequest.Parameters[0];
@@ -129,7 +144,7 @@ namespace Server___konsola {
                         var userLogin = userDatabaseOperations.TryToLoginUser(login, password);
                         JsonClassResponse<UserLogin> response = new JsonClassResponse<UserLogin> {
                             RID = jsonRequest.RID,
-                            RequestCode = jsonRequest.RequestCode,
+                            RequestCode = (int)RequestsCodes.WELCOME,
                             Response = userLogin,
                         };
                         return JsonConvert.SerializeObject(response);
@@ -151,7 +166,39 @@ namespace Server___konsola {
                     break;
                 case RequestsCodes.CALL:
                     break;
-                case RequestsCodes.RINGING:
+                case RequestsCodes.RINGING: {
+                        Guid sessionId = new Guid();
+                        Guid.TryParse(jsonRequest.Parameters[0], out sessionId);
+                        int userId = 0;
+                        int.TryParse(jsonRequest.Parameters[1], out userId);
+                        int friendId = 0;
+                        int.TryParse(jsonRequest.Parameters[2], out friendId);
+                        var friendIP = userDatabaseOperations.RingTouser(sessionId, userId, friendId);
+                        if (friendIP != UserDatabaseOperations.RETURN_NO) {
+                            var user = userDatabaseOperations.FindOneUser(sessionId, userId);
+                            JsonClassResponse<UserInfo> jsonResponse = new JsonClassResponse<UserInfo> {
+                                RID = jsonRequest.RID,
+                                RequestCode = (int)RequestsCodes.RINGING,
+                                Response = UserInfo.Convert(user)
+                            };
+                            var friendResponse = Ring(friendIP, ClientPort, JsonConvert.SerializeObject(jsonResponse));
+                            return friendResponse;
+                            //JsonClassResponse<UserInfo> jsonFriendResponse = JsonConvert.DeserializeObject<JsonClassResponse<UserInfo>>(friendResponse);
+                            //if(jsonFriendResponse.RequestCode == (int)RequestsCodes.OK) {
+                            //    return friendResponse;
+                            //}
+                            //else {
+                            //    return 
+                            //}
+                        }
+                        else {
+                            JsonClassResponse<UserInfo> jsonNOResponse = new JsonClassResponse<UserInfo> {
+                                RID = jsonRequest.RID,
+                                RequestCode = (int)RequestsCodes.RINGING,
+                                Response = null
+                            };
+                        }
+                    }
                     break;
                 case RequestsCodes.OK:
                     break;
