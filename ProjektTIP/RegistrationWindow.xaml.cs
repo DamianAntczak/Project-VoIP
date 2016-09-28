@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using SharedClasses;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -35,7 +36,7 @@ namespace ProjektTIP
             validation = true;
         }
 
-        private void bRegister_Click(object sender, RoutedEventArgs e)
+        private async void bRegister_Click(object sender, RoutedEventArgs e)
         {
             if (String.IsNullOrEmpty(tNazwisko.Text))
                 validation = false;
@@ -52,10 +53,18 @@ namespace ProjektTIP
 
                 newUser.PasswordHash = HashPassword(password.Password);
 
-                string json = JsonConvert.SerializeObject(newUser);
-                MessageBox.Show(json);
 
-                var x = ConnectToServer(json);
+                JsonClassRequest request = new JsonClassRequest()
+                {
+                    RID = 10133,
+                    RequestCode = (int)RequestsCodes.REGISTER,
+                    Parameters = new List<string>() { newUser.Name, newUser.SecondName, newUser.Login, newUser.PasswordHash }
+                };
+
+                string json = JsonConvert.SerializeObject(request);
+                var x = await ConnectToServer(json);
+                var register = JsonConvert.DeserializeObject<JsonClassResponse<UserLogin>>(x);
+                UserLogin userLogin = register.Response;
 
             }
             else
@@ -84,16 +93,17 @@ namespace ProjektTIP
             return result;
         }
 
-        async Task<bool> ConnectToServer(string json)
+        async Task<string> ConnectToServer(string json)
         {
             using (var tcpClient = new TcpClient())
             {
                 await tcpClient.ConnectAsync(Settings.ServerAddress, Settings.ServerPort);
                 var writer = new StreamWriter(tcpClient.GetStream(), Encoding.UTF8);
+                writer.AutoFlush = true;
                 var reader = new StreamReader(tcpClient.GetStream(), Encoding.UTF8);
-                writer.WriteLine(json);
+                await writer.WriteLineAsync(json);
                 var responseString = await reader.ReadLineAsync();
-                return true;
+                return responseString;
             }
         }
     }
