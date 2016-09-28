@@ -13,7 +13,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using SharedClasses;
-
+using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace ProjektTIP {
     /// <summary>
@@ -31,6 +32,9 @@ namespace ProjektTIP {
         private string audioPath = "test.vaw";
 
         private Friend user;
+        private UserLogin myLogin;
+
+        private Random rnd;
 
         private volatile bool connected;
 
@@ -70,11 +74,18 @@ namespace ProjektTIP {
 
             user = new Friend("Zabka");
 
+            rnd = new Random();
+
             var loginWindow = new LoginWindow();
-            if (loginWindow.ShowDialog() == false)
+
+            myLogin = loginWindow.ShowLoginDialog();
+
+
+            if (myLogin.Id == 0 )
             {
                 Application.Current.Shutdown();
             }
+            MessageBox.Show(myLogin.Id.ToString());
         }
 
 
@@ -126,25 +137,23 @@ namespace ProjektTIP {
                 throw new InvalidOperationException();
             }
         }
-        private void bConnection_Click(object sender, RoutedEventArgs e) {
+
+        private async void bConnection_Click(object sender, RoutedEventArgs e) {
 
             if (!connected)
             {
 
-                byte[] send_buffer = Encoding.ASCII.GetBytes("Hello");
-
-                try
+                JsonClassRequest request = new JsonClassRequest()
                 {
-                    AllocConsole();
-                    Console.WriteLine("Wysłanie hello");
-                    sending_socket.SendTo(send_buffer, sending_end_point);
+                    RID = rnd.Next(1000,5000),
+                    RequestCode = (int)RequestsCodes.CALL,
+                    Parameters = new List<string>() {myLogin.Id.ToString(),"21" }
+                };
 
+                string json = JsonConvert.SerializeObject(request);
+                var x = await ConnectToServer(json);
+                var response = JsonConvert.DeserializeObject<UserInfo>(x);
 
-                }
-                catch (Exception send_exception)
-                {
-                    Console.WriteLine(" Exception {0}", send_exception.Message);
-                }
 
                 sending_socket_audio = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
                 sending_end_point = new IPEndPoint(send_to_address, 11122);
@@ -344,6 +353,21 @@ namespace ProjektTIP {
             user.Name = "Jan";
             var settingWindow = new SettingWindow(ref user);
             settingWindow.ShowDialog();
+        }
+
+
+        async Task<string> ConnectToServer(string json)
+        {
+            using (var tcpClient = new TcpClient())
+            {
+                await tcpClient.ConnectAsync(Settings.ServerAddress, Settings.ServerPort);
+                var writer = new StreamWriter(tcpClient.GetStream(), Encoding.UTF8);
+                writer.AutoFlush = true;
+                var reader = new StreamReader(tcpClient.GetStream(), Encoding.UTF8);
+                await writer.WriteLineAsync(json);
+                var responseString = await reader.ReadLineAsync();
+                return responseString;
+            }
         }
     }
 }

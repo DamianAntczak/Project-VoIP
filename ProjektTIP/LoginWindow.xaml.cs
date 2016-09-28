@@ -25,10 +25,13 @@ namespace ProjektTIP
     /// </summary>
     public partial class LoginWindow : Window
     {
+        private UserLogin myLogin;
 
         public LoginWindow()
         {
             InitializeComponent();
+
+            this.myLogin = new UserLogin();
         }
 
         public string HashPassword(string ClientHashedPassword)
@@ -62,6 +65,8 @@ namespace ProjektTIP
             var x = await ConnectToServer(json);
             var login = JsonConvert.DeserializeObject<JsonClassResponse<UserLogin>>(x);
             UserLogin userLogin = login.Response;
+            myLogin = userLogin;
+            //MessageBox.Show(userLogin.Id.ToString());
 
             if (!userLogin.SessionID.Equals(new Guid()))
             {
@@ -92,6 +97,13 @@ namespace ProjektTIP
         {
             var registerWindow = new RegistrationWindow();
             registerWindow.Show();
+        }
+
+        public UserLogin ShowLoginDialog()
+        {
+            this.ShowDialog();
+
+            return myLogin;
         }
     }
 }
