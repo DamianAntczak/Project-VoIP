@@ -49,6 +49,7 @@ namespace ProjektTIP {
 
         private bool stopCall;
         private bool friendIsCalling = false;
+        private Thread wstart;
 
         public WaveIn waveSource = null;
 
@@ -59,8 +60,8 @@ namespace ProjektTIP {
             InitializeComponent();
             stopCall = false;
             sending_socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            send_to_address = IPAddress.Parse("127.0.0.1");
-            sending_end_point = new IPEndPoint(send_to_address, 11000);
+            //send_to_address = IPAddress.Parse("127.0.0.1");
+            //sending_end_point = new IPEndPoint(send_to_address, 11000);
 
             connected = false;
 
@@ -103,6 +104,8 @@ namespace ProjektTIP {
                 var json = await reader.ReadLineAsync();
                 JsonClassResponse<UserInfo> incomingCall
                     = JsonConvert.DeserializeObject<JsonClassResponse<UserInfo>>(json);
+                send_to_address = IPAddress.Parse(incomingCall.Response.ActualIP);
+                sending_end_point = new IPEndPoint(send_to_address, listenPort);
                 acceptCall = true;
                 if (acceptCall) {
                     writer.WriteLine(JsonConvert.SerializeObject(new JsonClassResponse<string>() {
@@ -110,8 +113,8 @@ namespace ProjektTIP {
                         RequestCode = (int)RequestsCodes.OK,
                         Response = RETURN_OK
                     }));
-                    StartListenUDP();
                     StartSendUDP();
+                    StartListenUDP();
                 }
 
 
@@ -168,10 +171,14 @@ namespace ProjektTIP {
                         RequestCode = (int)RequestsCodes.CALL,
                         Parameters = new List<string>() { myLogin.SessionID.ToString(), myLogin.Id.ToString(), selectedFriend.Id.ToString() }
                     };
-
                     string json = JsonConvert.SerializeObject(request);
                     var x = await ConnectToServer(json);
-                    var response = JsonConvert.DeserializeObject<UserInfo>(x);
+                    var response = JsonConvert.DeserializeObject<JsonClassResponse<UserInfo>>(x);
+                    if (response.RequestCode == (int)RequestsCodes.OK) {
+                        send_to_address = IPAddress.Parse(response.Response.ActualIP);
+                        StartSendUDP();
+                        StartListenUDP();
+                    }
 
 
                 }
@@ -189,7 +196,7 @@ namespace ProjektTIP {
 
         private void StartSendUDP() {
             sending_socket_audio = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            sending_end_point = new IPEndPoint(send_to_address, 11122);
+            sending_end_point = new IPEndPoint(send_to_address, listenPort);
 
             waveSource = new WaveIn();
             waveSource.WaveFormat = new WaveFormat(48000, 1);
@@ -207,42 +214,27 @@ namespace ProjektTIP {
         }
 
 
-        private void recive_UDP() {
-            bool done = false;
-            UdpClient listener = new UdpClient(listenPort);
-            IPEndPoint groupEP = new IPEndPoint(IPAddress.Any, listenPort);
+        private async void recive_UDP() {
 
 
-            string received_data = "";
             byte[] receive_byte_array;
 
-            AllocConsole();
             Console.WriteLine("Test");
 
             try {
 
-                while (!done) {
-                    receive_byte_array = listener.Receive(ref groupEP);
-                    AllocConsole();
-                    var recivedString = Encoding.ASCII.GetString(receive_byte_array);
-                    Console.WriteLine(recivedString);
+                AllocConsole();
 
-                    if (recivedString.Equals("Hello")) {
+                Thread viewerThread = new Thread(delegate () {
+                    var callWindow = new CallWindow();
+                    callWindow.Show();
+                    System.Windows.Threading.Dispatcher.Run();
+                });
 
-                        Thread viewerThread = new Thread(delegate () {
-                            var callWindow = new CallWindow();
-                            callWindow.Show();
-                            System.Windows.Threading.Dispatcher.Run();
-                        });
-
-                        viewerThread.SetApartmentState(ApartmentState.STA); // needs to be STA or throws exception
-                        viewerThread.Start();
-
-                        sending_socket.SendTo(Encoding.ASCII.GetBytes("Invite"), sending_end_point);
-                        var waudio = new Thread(new ThreadStart(recive_audio));
-                        waudio.Start();
-                    }
-                }
+                viewerThread.SetApartmentState(ApartmentState.STA); // needs to be STA or throws exception
+                viewerThread.Start();
+                var waudio = new Thread(new ThreadStart(recive_audio));
+                waudio.Start();
             }
             catch (Exception e) {
                 Console.WriteLine(e.ToString());
@@ -254,13 +246,14 @@ namespace ProjektTIP {
             callWindow.ShowDialog();
         }
 
-        private void recive_audio() {
-            UdpClient listener_audio = new UdpClient(11122);
-            IPEndPoint groupEP = new IPEndPoint(IPAddress.Any, 11122);
+        private async void recive_audio() {
+            UdpClient listener_audio = new UdpClient(listenPort);
+            IPEndPoint groupEP = new IPEndPoint(IPAddress.Any, listenPort);
 
             WaveOut _waveOut = new WaveOut();
 
-            var receive_byte_array = listener_audio.Receive(ref groupEP);
+            var udp = await listener_audio.ReceiveAsync();
+            var receive_byte_array = udp.Buffer;
             Console.WriteLine(receive_byte_array);
             IWaveProvider provider = new RawSourceWaveStream(
                      new MemoryStream(receive_byte_array), new WaveFormat(44100, 1));
@@ -282,9 +275,10 @@ namespace ProjektTIP {
         }
 
         private void StartListenUDP() {
-            var wstart = new Thread(new ThreadStart(recive_UDP));
+            wstart = new Thread(new ThreadStart(recive_UDP));
             wstart.Start();
         }
+
         void waveSource_DataAvailable(object sender, WaveInEventArgs e) {
             Console.WriteLine("Wysłanie pakietu");
             sending_socket.SendTo(e.Buffer, sending_end_point);
@@ -387,6 +381,10 @@ namespace ProjektTIP {
                     return "error";
                 }
             }
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+            tcpListener.Stop();
         }
     }
 }
